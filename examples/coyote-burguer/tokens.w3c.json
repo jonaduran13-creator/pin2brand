@@ -1,0 +1,144 @@
+﻿{
+  "$schema": "https://tr.designtokens.org/format/",
+  "brand": {
+    "meta": {
+      "project": {
+        "$value": "COYOTE BURGUER",
+        "$type": "other"
+      },
+      "archetype": {
+        "$value": "Artisanal Desert Folk & Handcrafted Street-Food Identity",
+        "$type": "other"
+      },
+      "source": {
+        "$value": "https://mx.pinterest.com/jonathanduransandoval/coyote-burguer/",
+        "$type": "other"
+      }
+    },
+    "color": {
+      "background": {
+        "primary": {
+          "$value": "#332929",
+          "$type": "color",
+          "$description": "Main page background and negative space"
+        },
+        "secondary": {
+          "$value": "#CDB59B",
+          "$type": "color",
+          "$description": "High-contrast dark/inverted bands, footers, and feature callouts"
+        },
+        "surface": {
+          "$value": "#262320",
+          "$type": "color",
+          "$description": "Cards, menu tiles, and interactive containers"
+        }
+      },
+      "text": {
+        "primary": {
+          "$value": "#CDB59B",
+          "$type": "color",
+          "$description": "Headings, body copy, and crisp borders"
+        },
+        "secondary": {
+          "$value": "#C4BBB0",
+          "$type": "color",
+          "$description": "Captions, metadata, and subdued labels"
+        }
+      },
+      "accent": {
+        "primary": {
+          "$value": "#B13B29",
+          "$type": "color",
+          "$description": "Primary CTAs, key brand marks, and focal highlights"
+        },
+        "secondary": {
+          "$value": "#6896D8",
+          "$type": "color",
+          "$description": "Badges, secondary tags, stickers, and hover states"
+        }
+      },
+      "semantic": {
+        "warning": {
+          "$value": "#D97706",
+          "$type": "color"
+        },
+        "success": {
+          "$value": "#15803D",
+          "$type": "color"
+        }
+      }
+    },
+    "typography": {
+      "display": {
+        "fontFamily": {
+          "$value": "Fraunces",
+          "$type": "fontFamily"
+        },
+        "fontWeight": {
+          "$value": "800",
+          "$type": "fontWeight"
+        }
+      },
+      "heading": {
+        "fontFamily": {
+          "$value": "Bebas Neue",
+          "$type": "fontFamily"
+        },
+        "fontWeight": {
+          "$value": "400",
+          "$type": "fontWeight"
+        }
+      },
+      "body": {
+        "fontFamily": {
+          "$value": "Plus Jakarta Sans",
+          "$type": "fontFamily"
+        },
+        "fontWeight": {
+          "$value": "500",
+          "$type": "fontWeight"
+        }
+      },
+      "mono": {
+        "fontFamily": {
+          "$value": "Space Mono",
+          "$type": "fontFamily"
+        },
+        "fontWeight": {
+          "$value": "700",
+          "$type": "fontWeight"
+        }
+      }
+    },
+    "radius": {
+      "sm": {
+        "$value": "2px",
+        "$type": "dimension"
+      },
+      "md": {
+        "$value": "6px",
+        "$type": "dimension"
+      },
+      "lg": {
+        "$value": "10px",
+        "$type": "dimension"
+      },
+      "pill": {
+        "$value": "9999px",
+        "$type": "dimension"
+      }
+    },
+    "border": {
+      "default": {
+        "$value": "2px solid #B13B29",
+        "$type": "other"
+      }
+    },
+    "shadow": {
+      "default": {
+        "$value": "4px 4px 0px #14110F",
+        "$type": "shadow"
+      }
+    }
+  }
+}

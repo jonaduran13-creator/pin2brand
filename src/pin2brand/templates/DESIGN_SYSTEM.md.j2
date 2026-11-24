@@ -1,0 +1,88 @@
+# DESIGN SYSTEM & AGENT VISUAL RULES: {{ manifest.project_name }}
+
+> **Agent Instruction:** Read and enforce EVERY rule in this document before writing any HTML, CSS, React, or Tailwind code for this project. Do not fall back to generic SaaS defaults.
+
+- **Aesthetic Archetype:** {{ manifest.frontend_ui_rules.aesthetic_archetype }}
+- **Source Pinterest Board:** {{ manifest.board_url }}
+- **Mood Keywords:** {{ manifest.mood_keywords | join(', ') }}
+- **Summary:** {{ manifest.brand_essence_summary }}
+
+---
+
+## 1. Google Fonts Import (`<head>`)
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="{{ manifest.typography.google_fonts_import_url }}" rel="stylesheet">
+```
+
+---
+
+## 2. Color Tokens & Tailwind Mapping
+
+| Semantic Role | HEX | CSS Variable | Suggested Tailwind Utility | Recommended Contrast Ink | Usage / Role |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Background Primary** | `{{ manifest.color_system.background_primary.hex }}` | `--brand-bg-primary` | `bg-[{{ manifest.color_system.background_primary.hex }}]` | `{{ manifest.color_system.background_primary.contrast_text_hex }}` | {{ manifest.color_system.background_primary.role }} |
+| **Background Secondary** | `{{ manifest.color_system.background_secondary.hex }}` | `--brand-bg-secondary` | `bg-[{{ manifest.color_system.background_secondary.hex }}]` | `{{ manifest.color_system.background_secondary.contrast_text_hex }}` | {{ manifest.color_system.background_secondary.role }} |
+| **Surface Card** | `{{ manifest.color_system.surface_card.hex }}` | `--brand-surface-card` | `bg-[{{ manifest.color_system.surface_card.hex }}]` | `{{ manifest.color_system.surface_card.contrast_text_hex }}` | {{ manifest.color_system.surface_card.role }} |
+| **Text Primary** | `{{ manifest.color_system.text_primary.hex }}` | `--brand-text-primary` | `text-[{{ manifest.color_system.text_primary.hex }}]` | `{{ manifest.color_system.text_primary.contrast_text_hex }}` | {{ manifest.color_system.text_primary.role }} |
+| **Text Secondary** | `{{ manifest.color_system.text_secondary.hex }}` | `--brand-text-secondary` | `text-[{{ manifest.color_system.text_secondary.hex }}]` | `{{ manifest.color_system.text_secondary.contrast_text_hex }}` | {{ manifest.color_system.text_secondary.role }} |
+| **Accent Primary** | `{{ manifest.color_system.accent_primary.hex }}` | `--brand-accent-primary` | `bg-[{{ manifest.color_system.accent_primary.hex }}]` | `{{ manifest.color_system.accent_primary.contrast_text_hex }}` | {{ manifest.color_system.accent_primary.role }} |
+| **Accent Secondary** | `{{ manifest.color_system.accent_secondary.hex }}` | `--brand-accent-secondary` | `bg-[{{ manifest.color_system.accent_secondary.hex }}]` | `{{ manifest.color_system.accent_secondary.contrast_text_hex }}` | {{ manifest.color_system.accent_secondary.role }} |
+
+**Harmony Notes:** {{ manifest.color_system.color_harmony_notes }}
+
+**Forbidden Colors:**
+{% for fc in manifest.color_system.forbidden_colors -%}
+- {{ fc }}
+{% endfor %}
+
+---
+
+## 3. Typography Hierarchy
+
+| Tier | Primary Font | Fallbacks | Weight | Tracking | Transform | Notes |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Display Hero** | `{{ manifest.typography.display_heading.family_recommended }}` | {{ manifest.typography.display_heading.google_fonts_fallbacks | join(', ') }} | `{{ manifest.typography.display_heading.weight }}` | `{{ manifest.typography.display_heading.letter_spacing }}` | `{{ manifest.typography.display_heading.text_transform }}` | {{ manifest.typography.display_heading.styling_notes }} |
+| **Section Heading** | `{{ manifest.typography.section_heading.family_recommended }}` | {{ manifest.typography.section_heading.google_fonts_fallbacks | join(', ') }} | `{{ manifest.typography.section_heading.weight }}` | `{{ manifest.typography.section_heading.letter_spacing }}` | `{{ manifest.typography.section_heading.text_transform }}` | {{ manifest.typography.section_heading.styling_notes }} |
+| **Body Copy** | `{{ manifest.typography.body_copy.family_recommended }}` | {{ manifest.typography.body_copy.google_fonts_fallbacks | join(', ') }} | `{{ manifest.typography.body_copy.weight }}` | `{{ manifest.typography.body_copy.letter_spacing }}` | `{{ manifest.typography.body_copy.text_transform }}` | {{ manifest.typography.body_copy.styling_notes }} |
+| **Monospace Accent** | `{{ manifest.typography.monospace_accent.family_recommended }}` | {{ manifest.typography.monospace_accent.google_fonts_fallbacks | join(', ') }} | `{{ manifest.typography.monospace_accent.weight }}` | `{{ manifest.typography.monospace_accent.letter_spacing }}` | `{{ manifest.typography.monospace_accent.text_transform }}` | {{ manifest.typography.monospace_accent.styling_notes }} |
+
+---
+
+## 4. Surface, Geometry & Component Rules
+
+- **Border Style:** `{{ manifest.frontend_ui_rules.border_style }}`
+- **Shadow Style:** `{{ manifest.frontend_ui_rules.shadow_style }}`
+- **Radii:** `sm={{ manifest.frontend_ui_rules.border_radius_tokens.sm }}`, `md={{ manifest.frontend_ui_rules.border_radius_tokens.md }}`, `lg={{ manifest.frontend_ui_rules.border_radius_tokens.lg }}`, `pill={{ manifest.frontend_ui_rules.border_radius_tokens.pill }}`
+- **Layout Grid:** {{ manifest.frontend_ui_rules.layout_grid_style }}
+
+**Textures & Effects:**
+{% for tex in manifest.frontend_ui_rules.texture_and_effects -%}
+- {{ tex }}
+{% endfor %}
+
+### Component Specs
+- **Buttons:** {{ manifest.frontend_ui_rules.component_guidelines.buttons }}
+- **Cards:** {{ manifest.frontend_ui_rules.component_guidelines.cards }}
+- **Navigation:** {{ manifest.frontend_ui_rules.component_guidelines.navigation }}
+- **Hero Section:** {{ manifest.frontend_ui_rules.component_guidelines.hero_section }}
+- **Badges:** {{ manifest.frontend_ui_rules.component_guidelines.badges }}
+
+---
+
+## 5. PROHIBIDO (Agent Anti-Patterns)
+
+{% for anti in manifest.frontend_ui_rules.anti_patterns -%}
+- **NEVER:** {{ anti }}
+{% endfor %}
+
+---
+
+## 6. Visual References & Image Prompts
+
+- **Contact Sheet:** `contact_sheet.jpg`
+- **Generative Style Prefix:** `{{ manifest.generative_ai_prompts.global_style_prefix }}`
+- **Generative Style Suffix:** `{{ manifest.generative_ai_prompts.global_style_suffix }}`
+- **Negative Prompt:** `{{ manifest.generative_ai_prompts.negative_prompt }}`

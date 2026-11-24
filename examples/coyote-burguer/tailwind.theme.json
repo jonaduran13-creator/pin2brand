@@ -1,0 +1,46 @@
+﻿{
+  "colors": {
+    "brand": {
+      "bg-primary": "#332929",
+      "bg-secondary": "#CDB59B",
+      "surface": "#262320",
+      "text-primary": "#CDB59B",
+      "text-secondary": "#C4BBB0",
+      "accent-primary": "#B13B29",
+      "accent-secondary": "#6896D8",
+      "warning": "#D97706",
+      "success": "#15803D"
+    }
+  },
+  "fontFamily": {
+    "display": [
+      "Fraunces",
+      "Alfa Slab One",
+      "Bricolage Grotesque",
+      "Syne"
+    ],
+    "heading": [
+      "Bebas Neue",
+      "Oswald",
+      "Space Grotesk"
+    ],
+    "sans": [
+      "Plus Jakarta Sans",
+      "DM Sans",
+      "Work Sans"
+    ],
+    "mono": [
+      "Space Mono",
+      "IBM Plex Mono"
+    ]
+  },
+  "borderRadius": {
+    "sm": "2px",
+    "md": "6px",
+    "lg": "10px",
+    "pill": "9999px"
+  },
+  "boxShadow": {
+    "brand": "4px 4px 0px #14110F"
+  }
+}

@@ -13,5 +13,8 @@ build/
 cookies.json
 cookies.txt
 
-# Local scratch outputs (keep examples/ tracked if desired)
+# Local scratch outputs & raw downloaded reference photos (avoid redistributing third-party pin photos)
 output/
+examples/*/references/*.jpg
+examples/*/references/*.png
+examples/*/references/*.webp

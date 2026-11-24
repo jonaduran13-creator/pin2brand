@@ -93,37 +93,27 @@ def export_brand_kit(
     manifest_json_str = manifest.model_dump_json(indent=2)
     json_path.write_text(manifest_json_str, encoding="utf-8")
 
-    # 2. DESIGN_SYSTEM.md
+    # 2. DESIGN_SYSTEM.md (Full human + architect specification)
     design_tpl = env.get_template("DESIGN_SYSTEM.md.j2")
     design_md_content = design_tpl.render(manifest=manifest)
     design_md_path = output_dir / "DESIGN_SYSTEM.md"
     design_md_path.write_text(design_md_content, encoding="utf-8")
 
-    # 3. AGENTS.md (Drop-in root instruction file for Antigravity, Claude Code, Codex, Windsurf)
+    # 3. AGENTS.md (Compact root directive & pre-commit checklist for coding agents)
+    agents_tpl = env.get_template("AGENTS.md.j2")
     agents_md_path = output_dir / "AGENTS.md"
-    agents_md_path.write_text(design_md_content, encoding="utf-8")
+    agents_md_path.write_text(agents_tpl.render(manifest=manifest), encoding="utf-8")
 
-    # 4. cursor-visual-identity.mdc (Cursor IDE rule with YAML frontmatter)
-    cursor_frontmatter = (
-        "---\n"
-        f"description: Visual Identity and UI Design System rules for {manifest.project_name} ({manifest.frontend_ui_rules.aesthetic_archetype})\n"
-        'globs: ["**/*.tsx", "**/*.jsx", "**/*.css", "**/*.scss", "**/*.html", "**/*.vue", "**/*.svelte"]\n'
-        "alwaysApply: true\n"
-        "---\n\n"
-    )
+    # 4. cursor-visual-identity.mdc (Cursor IDE rule with concrete JSX/TSX blueprints)
+    cursor_tpl = env.get_template("cursor_rules.mdc.j2")
     cursor_mdc_path = output_dir / "cursor-visual-identity.mdc"
-    cursor_mdc_path.write_text(cursor_frontmatter + design_md_content, encoding="utf-8")
+    cursor_mdc_path.write_text(cursor_tpl.render(manifest=manifest), encoding="utf-8")
 
-    # 5. SKILL.md (Installable agent skill)
+    # 5. SKILL.md (4-step executable agent skill workflow)
     slug = re.sub(r"[^a-z0-9-]+", "-", manifest.project_name.lower()).strip("-") or "brand"
-    skill_frontmatter = (
-        "---\n"
-        f"name: {slug}-visual-identity\n"
-        f"description: Enforces the {manifest.project_name} visual identity ({manifest.frontend_ui_rules.aesthetic_archetype}) extracted from Pinterest for front-end UI code and image generation.\n"
-        "---\n\n"
-    )
+    skill_tpl = env.get_template("SKILL.md.j2")
     skill_md_path = output_dir / "SKILL.md"
-    skill_md_path.write_text(skill_frontmatter + design_md_content, encoding="utf-8")
+    skill_md_path.write_text(skill_tpl.render(manifest=manifest, slug=slug), encoding="utf-8")
 
     # 6. tokens.w3c.json (W3C Design Tokens for Figma & Style Dictionary)
     w3c_path = output_dir / "tokens.w3c.json"
@@ -210,7 +200,7 @@ def export_brand_kit(
             }
             for rp in manifest.reference_pins[:8]
         ],
-        "contact_sheet_path": str(contact_sheet_path) if contact_sheet_path else "",
+        "contact_sheet_path": "contact_sheet.jpg" if contact_sheet_path else "",
     }
     prompts_path = output_dir / "generative-prompts.json"
     prompts_path.write_text(json.dumps(gen_prompts_payload, indent=2), encoding="utf-8")

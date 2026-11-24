@@ -285,17 +285,47 @@ def _synthesize_heuristic(
     )
 
     blob = " ".join([board.board_title] + [p.title + " " + p.description for p in board.pins]).lower()
+
+    # Parametric geometry derived from continuous visual metrics (saturation, grain, polarity)
+    is_low_sat_minimal = report.average_saturation < 0.20 and report.texture_grain_score < 21.0
+    is_high_chroma_bold = report.average_saturation >= 0.32 and report.contrast_polarity == "high_contrast"
     is_folk_desert_craft = (
         report.earth_tone_ratio >= 28.0
+        and not is_low_sat_minimal
         and (
             report.texture_grain_score >= 22.0
             or any(k in blob for k in ["coyote", "wolf", "ceramic", "clay", "desert", "folk", "pottery", "starlight"])
         )
     )
-    is_food_street = any(
-        k in blob for k in ["burger", "burguer", "diner", "food", "taco", "pizza", "fast food", "packaging", "retro"]
+    is_food_street = (
+        not is_low_sat_minimal
+        and any(
+            k in blob for k in ["burger", "burguer", "diner", "food", "taco", "pizza", "fast food", "packaging", "retro"]
+        )
     )
-    is_editorial = any(k in blob for k in ["editorial", "minimal", "serif", "luxury", "fashion", "magazine"])
+    is_editorial = is_low_sat_minimal or any(
+        k in blob for k in ["editorial", "minimal", "serif", "luxury", "fashion", "magazine", "japanese", "nordic"]
+    )
+
+    # Continuous parametric border thickness, radius scale, and shadow offset
+    border_px = 1 if is_low_sat_minimal else (3 if report.average_saturation >= 0.48 else 2)
+    border_ink = accent_1.hex if (is_dark_dominant and report.earth_tone_ratio >= 25.0) else text_pri_hex
+    border_style = f"{border_px}px solid {border_ink}"
+
+    if is_low_sat_minimal:
+        radii = BorderRadiusTokens(sm="0px", md="2px", lg="4px", pill="9999px")
+        shadow_style = "none (crisp hairline framing & negative space)"
+    elif report.surface_character == "graphic_flat" or is_high_chroma_bold:
+        offset_px = 5 if report.average_saturation >= 0.42 else 4
+        radii = BorderRadiusTokens(sm="2px", md="6px", lg="10px", pill="9999px")
+        shadow_style = f"{offset_px}px {offset_px}px 0px {'#14110F' if is_dark_dominant else text_pri_hex}"
+    elif report.contrast_polarity == "light_airy":
+        radii = BorderRadiusTokens(sm="6px", md="12px", lg="18px", pill="9999px")
+        shadow_style = f"0 6px 18px -4px rgba({accent_1.rgb[0]}, {accent_1.rgb[1]}, {accent_1.rgb[2]}, 0.18)"
+    else:
+        offset_px = 4 if report.texture_grain_score >= 24.0 else 3
+        radii = BorderRadiusTokens(sm="2px", md="6px", lg="10px", pill="9999px")
+        shadow_style = f"{offset_px}px {offset_px}px 0px {'#14110F' if is_dark_dominant else text_pri_hex}"
 
     if is_folk_desert_craft:
         archetype = (
@@ -335,9 +365,6 @@ def _synthesize_heuristic(
             text_transform="uppercase",
             styling_notes="Craft batch stamps, coordinates, prices, and desert outpost tags.",
         )
-        radii = BorderRadiusTokens(sm="2px", md="6px", lg="10px", pill="9999px")
-        border_style = f"2px solid {accent_1.hex if is_dark_dominant else text_pri_hex}"
-        shadow_style = f"4px 4px 0px { '#14110F' if is_dark_dominant else text_pri_hex }"
         textures = [
             f"Raw mineral sandstone & unglazed clay texture (grain score {report.texture_grain_score})",
             f"Hand-painted terracotta ({accent_1.hex}) and cobalt ({accent_2.hex}) block-print motifs",
@@ -360,6 +387,55 @@ def _synthesize_heuristic(
             "modern corporate SaaS UI, glossy plastic 3D render, cyberpunk neon, "
             "sterile white background, generic stock clipart"
         )
+    elif is_editorial:
+        archetype = (
+            "Minimalist Tactile Editorial / Precision Craft"
+            if is_low_sat_minimal
+            else "Tactile Editorial / Contemporary Print Craft"
+        )
+        display_font = TypographyRule(
+            family_recommended="Instrument Serif" if is_low_sat_minimal else "Fraunces",
+            google_fonts_fallbacks=["Playfair Display", "Cormorant Garamond"],
+            weight="400" if is_low_sat_minimal else "700",
+            letter_spacing="-0.03em",
+            text_transform="none",
+            styling_notes="Expressive high-contrast serif with tight tracking and quiet authority.",
+        )
+        section_font = TypographyRule(
+            family_recommended="Space Grotesk" if is_low_sat_minimal else "Syne",
+            google_fonts_fallbacks=["Outfit", "DM Sans"],
+            weight="600",
+            letter_spacing="-0.01em",
+            text_transform="none",
+            styling_notes="Architectural modern display for section anchors.",
+        )
+        body_font = TypographyRule(
+            family_recommended="DM Sans" if is_low_sat_minimal else "Inter",
+            google_fonts_fallbacks=["Plus Jakarta Sans", "Work Sans"],
+            weight="400",
+            letter_spacing="0em",
+            text_transform="none",
+            styling_notes="Clean editorial body copy with generous 1.65 line-height.",
+        )
+        mono_font = TypographyRule(
+            family_recommended="IBM Plex Mono",
+            google_fonts_fallbacks=["Space Mono"],
+            weight="500",
+            letter_spacing="0.06em",
+            text_transform="uppercase",
+            styling_notes="Caption indices, specification numbers, and micro-labels.",
+        )
+        textures = [
+            f"Matte uncoated paper surface (grain score {report.texture_grain_score})",
+            "Fine editorial grid hairlines and generous negative space",
+        ]
+        anti_patterns = [
+            "Do NOT overcrowd cards with heavy multi-color pills or cartoon shadows",
+            "Do NOT use heavy slab-serifs that break the quiet editorial proportion",
+        ]
+        style_prefix = f"Contemporary minimalist editorial art direction, studio photography, {report.overall_temperature} tonal harmony"
+        style_suffix = f"anchored by {primary_bg_hex} and {accent_1.hex}, soft directional light, tactile uncoated paper feel"
+        neg_prompt = "cheap clipart, oversaturated HDR, neon glow, loud comic borders"
     elif is_food_street or (report.overall_temperature == "warm" and report.average_saturation >= 0.25):
         archetype = "Retro Street-Food Diner / Bold Analog Graphic Identity"
         display_font = TypographyRule(
@@ -394,11 +470,8 @@ def _synthesize_heuristic(
             text_transform="uppercase",
             styling_notes="Receipt/ticket-style metadata, order numbers, timestamps, and badge tags.",
         )
-        radii = BorderRadiusTokens(sm="2px", md="6px", lg="10px", pill="9999px")
-        border_style = f"2px solid {text_pri_hex if not is_dark_dominant else accent_1.hex}"
-        shadow_style = f"4px 4px 0px {text_pri_hex if not is_dark_dominant else '#000000'}"
         textures = [
-            "Subtle paper/film grain overlay (3-5% opacity)",
+            f"Subtle paper/film grain overlay (grain score {report.texture_grain_score})",
             "Halftone dot shading on hero illustrations",
             "Die-cut sticker badges and stamp seals",
         ]
@@ -410,51 +483,6 @@ def _synthesize_heuristic(
         style_prefix = f"Analog retro street-food editorial aesthetic, bold screenprint graphic design, {report.overall_temperature} palette"
         style_suffix = f"palette of {primary_bg_hex}, {accent_1.hex}, and {accent_2.hex}, tactile paper grain, halftone print texture, crisp graphic contrast"
         neg_prompt = "generic corporate SaaS, neon cyberpunk, glossy plastic 3D render, sterile minimalist stock photo, blurry pastel gradient"
-    elif is_editorial:
-        archetype = "Tactile Editorial / Contemporary Print Craft"
-        display_font = TypographyRule(
-            family_recommended="Fraunces",
-            google_fonts_fallbacks=["Playfair Display", "Instrument Serif"],
-            weight="700",
-            letter_spacing="-0.03em",
-            text_transform="none",
-            styling_notes="Expressive high-contrast serif with tight tracking for hero headlines.",
-        )
-        section_font = TypographyRule(
-            family_recommended="Syne",
-            google_fonts_fallbacks=["Space Grotesk", "Outfit"],
-            weight="700",
-            letter_spacing="-0.01em",
-            text_transform="none",
-            styling_notes="Architectural modern display for section anchors.",
-        )
-        body_font = TypographyRule(
-            family_recommended="Inter",
-            google_fonts_fallbacks=["Plus Jakarta Sans", "DM Sans"],
-            weight="400",
-            letter_spacing="0em",
-            text_transform="none",
-            styling_notes="Clean editorial body copy with generous 1.65 line-height.",
-        )
-        mono_font = TypographyRule(
-            family_recommended="IBM Plex Mono",
-            google_fonts_fallbacks=["Space Mono"],
-            weight="500",
-            letter_spacing="0.06em",
-            text_transform="uppercase",
-            styling_notes="Caption indices, dates, and small uppercase tags.",
-        )
-        radii = BorderRadiusTokens(sm="0px", md="2px", lg="4px", pill="9999px")
-        border_style = f"1px solid {text_pri_hex}"
-        shadow_style = "none (use crisp hairline rules and whitespace framing)"
-        textures = ["Matte uncoated paper texture", "Fine editorial grid hairlines"]
-        anti_patterns = [
-            "Do NOT overcrowd cards with heavy multi-color pills",
-            "Do NOT use rounded bubbly cartoon buttons",
-        ]
-        style_prefix = f"Contemporary editorial art direction, studio photography, {report.overall_temperature} tonal harmony"
-        style_suffix = f"anchored by {primary_bg_hex} and {accent_1.hex}, natural directional light, tactile uncoated paper feel"
-        neg_prompt = "cheap clipart, oversaturated HDR, neon glow, cluttered collage"
     else:
         archetype = "Neo-Graphic Visual System / Bold Tactile Brand"
         display_font = TypographyRule(
@@ -489,10 +517,7 @@ def _synthesize_heuristic(
             text_transform="uppercase",
             styling_notes="Technical metadata badges and micro-labels.",
         )
-        radii = BorderRadiusTokens(sm="4px", md="8px", lg="14px", pill="9999px")
-        border_style = f"2px solid {text_pri_hex}"
-        shadow_style = f"3px 3px 0px {text_pri_hex}"
-        textures = ["Subtle film grain (3%)", "High-contrast surface layering"]
+        textures = [f"Subtle surface grain (score {report.texture_grain_score})", "High-contrast surface layering"]
         anti_patterns = [
             "Do NOT fall back to default Tailwind indigo/slate SaaS templates",
             "Do NOT ignore the extracted accent hierarchy",
@@ -618,12 +643,13 @@ def _synthesize_heuristic(
     for p in board.pins:
         p_sum = summary_map.get(p.pin_id)
         v_tags, rationale = _infer_pin_visual_tags(p.title, p.description, p_sum)
+        rel_path = f"references/{Path(p.local_path).name}" if p.local_path else ""
         ref_pins.append(
             ReferencePin(
                 id=p.pin_id,
                 title=p.title,
                 source_url=p.pin_url,
-                local_path=p.local_path,
+                local_path=rel_path,
                 dominant_hex_colors=p_sum.dominant_hex_colors if p_sum else [],
                 visual_tags=v_tags,
                 why_it_matters=f"Pin #{p.index}: {rationale}",
@@ -689,12 +715,13 @@ def _reconcile_manifest_pins(
         llm_rp = llm_pin_map.get(p.pin_id)
         p_sum = summary_map.get(p.pin_id)
         fallback_tags, fallback_why = _infer_pin_visual_tags(p.title, p.description, p_sum)
+        rel_path = f"references/{Path(p.local_path).name}" if p.local_path else ""
         reconciled_pins.append(
             ReferencePin(
                 id=p.pin_id,
                 title=llm_rp.title if llm_rp and llm_rp.title else p.title,
                 source_url=p.pin_url,
-                local_path=p.local_path,
+                local_path=rel_path,
                 dominant_hex_colors=(
                     p_sum.dominant_hex_colors
                     if p_sum

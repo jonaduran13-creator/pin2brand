@@ -1,35 +1,35 @@
-﻿{
+{
   "project_name": "COYOTE BURGUER",
   "aesthetic_archetype": "Artisanal Desert Folk & Handcrafted Street-Food Identity",
   "palette_hex": [
-    "#332929",
-    "#CDB59B",
+    "#342A2A",
+    "#C4B5A6",
     "#B13B29",
     "#6896D8"
   ],
   "global_style_prefix": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture",
-  "global_style_suffix": "anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
+  "global_style_suffix": "anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
   "negative_prompt": "modern corporate SaaS UI, glossy plastic 3D render, cyberpunk neon, sterile white background, generic stock clipart",
   "midjourney": {
     "parameters": "--v 6.1 --stylize 250 --ar 4:5",
-    "hero_command": "/imagine prompt: Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, signature hero shot on raw sandstone & handcrafted ceramic tableware, warm directional lighting, anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting --v 6.1 --stylize 250 --ar 4:5",
-    "mascot_command": "/imagine prompt: Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, folk-art mascot illustration, bold block-print terracotta and cobalt linework, distressed ink stamp feel, anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting --v 6.1 --stylize 250 --ar 4:5"
+    "hero_command": "/imagine prompt: Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, signature hero shot on raw sandstone & handcrafted ceramic tableware, warm directional lighting, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting --v 6.1 --stylize 250 --ar 4:5",
+    "mascot_command": "/imagine prompt: Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, folk-art mascot illustration, bold block-print terracotta and cobalt linework, distressed ink stamp feel, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting --v 6.1 --stylize 250 --ar 4:5"
   },
   "flux_and_imagen_templates": {
-    "hero_photography": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, signature hero shot on raw sandstone & handcrafted ceramic tableware, warm directional lighting, anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
-    "brand_mascot_illustration": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, folk-art mascot illustration, bold block-print terracotta and cobalt linework, distressed ink stamp feel, anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
-    "seamless_background_texture": "Seamless tileable surface texture, raw adobe sandstone and unglazed terracotta clay grain in #332929 and #B13B29, macro top-down",
-    "ui_icon_sticker": "Hand-stamped woodblock badge icon, thick #CDB59B ink outline, #B13B29 terracotta and #6896D8 cobalt spot colors, isolated"
+    "hero_photography": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, signature hero shot on raw sandstone & handcrafted ceramic tableware, warm directional lighting, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
+    "brand_mascot_illustration": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, folk-art mascot illustration, bold block-print terracotta and cobalt linework, distressed ink stamp feel, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
+    "seamless_background_texture": "Seamless tileable surface texture, raw adobe sandstone and unglazed terracotta clay grain in #342A2A and #B13B29, macro top-down",
+    "ui_icon_sticker": "Hand-stamped woodblock badge icon, thick #C4B5A6 ink outline, #B13B29 terracotta and #6896D8 cobalt spot colors, isolated"
   },
   "style_reference_images": [
     {
       "id": "e1_AfqPShwYKW8mSRF7-GnI9udxwza2iD0vfHO4bquNHDYPOw3q7rdR",
       "title": "two small wooden toy animals sitting on top of a table",
-      "local_path": "examples/coyote-burguer/references\\pin_01.jpg",
+      "local_path": "references/pin_01.jpg",
       "dominant_hex_colors": [
-        "#D1B99F",
-        "#C49A70",
-        "#9A744F"
+        "#C39A70",
+        "#D1B9A0",
+        "#9B744F"
       ],
       "visual_tags": [
         "folk-coyote-motif",
@@ -40,10 +40,10 @@
     {
       "id": "e1_AfqPShyj7bNRtfe1Br_LpbQCDlLSJWXa9hkqwI-onpw6S9Feg8jd",
       "title": "Wolf under Starlight",
-      "local_path": "examples/coyote-burguer/references\\pin_02.jpg",
+      "local_path": "references/pin_02.jpg",
       "dominant_hex_colors": [
-        "#808F97",
-        "#6A808A",
+        "#7F8F97",
+        "#697F8A",
         "#C63E30"
       ],
       "visual_tags": [
@@ -56,11 +56,11 @@
     {
       "id": "e1_AfqPShwv6DMkJpE6CeLzlgDKFM0W0lF8VWEi5XO9p9gV81mBuRiz",
       "title": "a close up view of the surface of a piece of paper",
-      "local_path": "examples/coyote-burguer/references\\pin_03.jpg",
+      "local_path": "references/pin_03.jpg",
       "dominant_hex_colors": [
-        "#A3978A",
-        "#928374",
-        "#B2AAA0"
+        "#A29689",
+        "#B1AA9F",
+        "#918172"
       ],
       "visual_tags": [
         "raw-mineral-stone-texture",
@@ -70,11 +70,11 @@
     {
       "id": "e1_AfqPShzr0lOYt6xSQKFLcU80nZrLJXgwDMJQRLra2FN79gCBFaTX",
       "title": "several clay cups with designs on them sitting on a blue table top next to each other",
-      "local_path": "examples/coyote-burguer/references\\pin_04.jpg",
+      "local_path": "references/pin_04.jpg",
       "dominant_hex_colors": [
         "#2A282D",
-        "#1D3D60",
-        "#5C89CA"
+        "#1D3D5F",
+        "#5B89CA"
       ],
       "visual_tags": [
         "handcrafted-ceramics",
@@ -84,11 +84,11 @@
     {
       "id": "e1_AfqPShwC8C6f47LiTDWfPjpU_ryr-wPFbUTDg6TtoTqeIuCXddVm",
       "title": "an image of two red dogs in the grass with chinese characters on them and one dog is standing up",
-      "local_path": "examples/coyote-burguer/references\\pin_05.jpg",
+      "local_path": "references/pin_05.jpg",
       "dominant_hex_colors": [
-        "#646555",
-        "#747567",
-        "#515441"
+        "#656656",
+        "#757668",
+        "#525442"
       ],
       "visual_tags": [
         "folk-coyote-motif",
@@ -96,5 +96,5 @@
       ]
     }
   ],
-  "contact_sheet_path": "examples/coyote-burguer/contact_sheet.jpg"
+  "contact_sheet_path": "contact_sheet.jpg"
 }

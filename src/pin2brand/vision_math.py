@@ -1,4 +1,4 @@
-"""Mathematical color science (CIELAB K-Means + WCAG + Texture Metrics) and Contact Sheet generator."""
+"""Mathematical color science (Pure NumPy CIELAB K-Means++ + WCAG + Texture Metrics) and Contact Sheet generator."""
 
 from __future__ import annotations
 
@@ -8,7 +8,6 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-from sklearn.cluster import KMeans
 
 from .models import (
     BoardMathReport,
@@ -74,6 +73,67 @@ def _lab_to_rgb(lab: np.ndarray) -> np.ndarray:
     lin = np.clip(xyz @ m_inv.T, 0.0, 1.0)
     srgb = np.where(lin > 0.0031308, 1.055 * (lin ** (1.0 / 2.4)) - 0.055, 12.92 * lin)
     return np.clip(np.round(srgb * 255.0), 0, 255).astype(np.uint8)
+
+
+def _kmeans_plusplus_numpy(
+    data: np.ndarray,
+    k: int,
+    n_init: int = 4,
+    max_iter: int = 60,
+    seed: int = 42,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Pure NumPy K-Means++ implementation (zero scipy/scikit-learn dependency).
+
+    Returns (best_centers (k, D), best_labels (N,)).
+    """
+    n_samples, n_features = data.shape
+    rng = np.random.default_rng(seed)
+    best_inertia = float("inf")
+    best_centers = np.zeros((k, n_features), dtype=np.float64)
+    best_labels = np.zeros(n_samples, dtype=np.int64)
+
+    for _ in range(n_init):
+        # K-Means++ initialization
+        centers = np.empty((k, n_features), dtype=np.float64)
+        first_idx = int(rng.integers(0, n_samples))
+        centers[0] = data[first_idx]
+        closest_dist_sq = np.sum((data - centers[0]) ** 2, axis=1)
+
+        for c_id in range(1, k):
+            total_d = float(np.sum(closest_dist_sq))
+            if total_d <= 1e-12:
+                idx = int(rng.integers(0, n_samples))
+            else:
+                probs = closest_dist_sq / total_d
+                idx = int(rng.choice(n_samples, p=probs))
+            centers[c_id] = data[idx]
+            new_dist_sq = np.sum((data - centers[c_id]) ** 2, axis=1)
+            closest_dist_sq = np.minimum(closest_dist_sq, new_dist_sq)
+
+        # Lloyd's iterations
+        labels = np.zeros(n_samples, dtype=np.int64)
+        for _it in range(max_iter):
+            # Compute squared distances (N, k)
+            dists_sq = np.sum((data[:, None, :] - centers[None, :, :]) ** 2, axis=2)
+            new_labels = np.argmin(dists_sq, axis=1)
+            if np.array_equal(new_labels, labels) and _it > 0:
+                break
+            labels = new_labels
+            for j in range(k):
+                mask = labels == j
+                if np.any(mask):
+                    centers[j] = data[mask].mean(axis=0)
+                else:
+                    centers[j] = data[int(rng.integers(0, n_samples))]
+
+        final_dists_sq = np.sum((data - centers[labels]) ** 2, axis=1)
+        inertia = float(np.sum(final_dists_sq))
+        if inertia < best_inertia:
+            best_inertia = inertia
+            best_centers = centers.copy()
+            best_labels = labels.copy()
+
+    return best_centers, best_labels
 
 
 def rgb_to_hex(rgb: tuple[int, int, int]) -> str:
@@ -165,7 +225,6 @@ def _sample_image_pixels_and_texture(image_path: Path, size: int = 150) -> tuple
             + 0.587 * arr[:, :, 1].astype(np.float64)
             + 0.114 * arr[:, :, 2].astype(np.float64)
         )
-        # 2D discrete Laplacian: 4*center - top - bottom - left - right
         lap = (
             4.0 * gray[1:-1, 1:-1]
             - gray[:-2, 1:-1]
@@ -182,16 +241,17 @@ def _extract_k_colors_lab(
     n_clusters: int,
     random_state: int = 42,
 ) -> list[tuple[tuple[int, int, int], float]]:
-    """Run K-Means in CIELAB space and return [(rgb_tuple, percentage), ...] sorted by share."""
+    """Run pure-NumPy K-Means++ in CIELAB space and return [(rgb_tuple, percentage), ...] sorted by share."""
     unique_count = len(np.unique(pixels_rgb, axis=0))
     k = max(1, min(n_clusters, unique_count))
     lab_pixels = _rgb_to_lab(pixels_rgb)
-    km = KMeans(n_clusters=k, n_init=4, max_iter=150, random_state=random_state)
-    labels = km.fit_predict(lab_pixels)
+    centers_lab, labels = _kmeans_plusplus_numpy(
+        lab_pixels, k=k, n_init=4, max_iter=60, seed=random_state
+    )
     counts = np.bincount(labels, minlength=k).astype(np.float64)
     total = float(counts.sum()) or 1.0
 
-    centroids_rgb = _lab_to_rgb(km.cluster_centers_)
+    centroids_rgb = _lab_to_rgb(centers_lab)
     ranked = sorted(
         [
             (
@@ -295,7 +355,6 @@ def generate_contact_sheet(
         font=font_sub,
     )
 
-    # Global swatches strip in header
     swatch_x = 40
     swatch_y = 104
     for cluster in global_clusters[:10]:
@@ -363,7 +422,7 @@ def analyze_board_visuals(
     pins: list[ScrapedPin],
     contact_sheet_path: Path,
 ) -> BoardMathReport:
-    """Compute CIELAB K-Means palettes, texture grain metrics, WCAG contrast, and contact sheet."""
+    """Compute CIELAB K-Means++ palettes, texture grain metrics, WCAG contrast, and contact sheet."""
     valid_pins = [p for p in pins if p.local_path and Path(p.local_path).exists()]
     if not valid_pins:
         raise ValueError("No downloaded local pin images available for visual analysis.")
@@ -396,7 +455,7 @@ def analyze_board_visuals(
             PinColorSummary(
                 pin_id=pin.pin_id,
                 index=pin.index,
-                local_path=pin.local_path,
+                local_path=f"references/{Path(pin.local_path).name}",
                 dominant_hex_colors=distinct_hexes,
                 texture_score=tex_score,
             )
@@ -443,7 +502,6 @@ def analyze_board_visuals(
         polarity = "balanced"
 
     avg_texture = round(float(np.mean(texture_scores)) if texture_scores else 0.0, 2)
-    # Compute share of terracotta / clay / ochre / sandstone earth tones (hue 5..52 deg, moderate sat/lum)
     earth_share = round(
         sum(
             c.percentage

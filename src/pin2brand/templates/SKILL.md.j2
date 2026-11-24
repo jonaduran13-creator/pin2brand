@@ -1,0 +1,35 @@
+---
+name: {{ slug }}-visual-identity
+description: Apply and audit the {{ manifest.project_name }} visual identity ({{ manifest.frontend_ui_rules.aesthetic_archetype }}) across front-end interfaces and generative AI prompts.
+---
+
+# Skill Workflow: `{{ slug }}-visual-identity`
+
+Use this skill whenever building UI screens, brand assets, or image prompts for **{{ manifest.project_name }}**.
+
+## Step 1: Wire Design Tokens First
+1. Import `tokens.css` (or merge `tailwind.theme.json` / `tokens.w3c.json`) into the project stylesheet before writing components.
+2. Inject the Google Fonts stylesheet into the document `<head>`:
+   `{{ manifest.typography.google_fonts_import_url }}`
+
+## Step 2: Apply Archetype & Component Geometry
+- **Archetype:** {{ manifest.frontend_ui_rules.aesthetic_archetype }}
+- **Layout Grid:** {{ manifest.frontend_ui_rules.layout_grid_style }}
+- **Buttons:** {{ manifest.frontend_ui_rules.component_guidelines.buttons }}
+- **Cards:** {{ manifest.frontend_ui_rules.component_guidelines.cards }}
+- **Navigation:** {{ manifest.frontend_ui_rules.component_guidelines.navigation }}
+- **Hero Section:** {{ manifest.frontend_ui_rules.component_guidelines.hero_section }}
+- **Badges:** {{ manifest.frontend_ui_rules.component_guidelines.badges }}
+
+## Step 3: Generate Cohesive Visual Assets
+When invoking an image generator (Midjourney, Flux, Imagen / Nano Banana), always wrap subject prompts with:
+- **Prefix:** `{{ manifest.generative_ai_prompts.global_style_prefix }}`
+- **Suffix:** `{{ manifest.generative_ai_prompts.global_style_suffix }}`
+- **Negative Prompt:** `{{ manifest.generative_ai_prompts.negative_prompt }}`
+- **Style Reference Images (`--sref`):** Use `contact_sheet.jpg` or `references/pin_01.jpg`.
+
+## Step 4: Final Visual Audit
+Before completing any UI task, verify:
+1. Contrast matches WCAG AA (`{{ manifest.color_system.text_primary.hex }}` on `{{ manifest.color_system.background_primary.hex }}`).
+2. Surface textures (`{{ manifest.frontend_ui_rules.texture_and_effects | join('; ') }}`) are represented.
+3. None of the forbidden patterns appear (`{{ manifest.frontend_ui_rules.anti_patterns | join('; ') }}`).

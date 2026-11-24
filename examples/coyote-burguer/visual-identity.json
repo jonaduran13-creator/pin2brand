@@ -1,8 +1,8 @@
-﻿{
+{
   "project_name": "COYOTE BURGUER",
   "board_url": "https://mx.pinterest.com/jonathanduransandoval/coyote-burguer/",
-  "generated_at": "2026-11-24T16:13:07.535025+00:00",
-  "brand_essence_summary": "Visual identity compiled from 5 references in 'COYOTE BURGUER'. Defined by artisanal desert folk & handcrafted street-food identity, tactile_organic surfaces (grain 28.49), and a balanced CIELAB palette (40.72% earth tones).",
+  "generated_at": "2026-11-24T16:56:17.542048+00:00",
+  "brand_essence_summary": "Visual identity compiled from 5 references in 'COYOTE BURGUER'. Defined by artisanal desert folk & handcrafted street-food identity, tactile_organic surfaces (grain 28.49), and a warm CIELAB palette (53.32% earth tones).",
   "mood_keywords": [
     "wolf",
     "starlight",
@@ -15,17 +15,17 @@
   ],
   "color_system": {
     "background_primary": {
-      "hex": "#332929",
+      "hex": "#342A2A",
       "name": "Primary Canvas",
       "role": "Main page background and negative space",
-      "usage_percentage": 4.64,
-      "contrast_text_hex": "#CDB59B"
+      "usage_percentage": 4.8,
+      "contrast_text_hex": "#C4B5A6"
     },
     "background_secondary": {
-      "hex": "#CDB59B",
+      "hex": "#C4B5A6",
       "name": "Contrast Band Canvas",
       "role": "High-contrast dark/inverted bands, footers, and feature callouts",
-      "usage_percentage": 8.57,
+      "usage_percentage": 16.44,
       "contrast_text_hex": "#1A1714"
     },
     "surface_card": {
@@ -33,27 +33,27 @@
       "name": "Elevated Surface",
       "role": "Cards, menu tiles, and interactive containers",
       "usage_percentage": 15.0,
-      "contrast_text_hex": "#CDB59B"
+      "contrast_text_hex": "#C4B5A6"
     },
     "text_primary": {
-      "hex": "#CDB59B",
+      "hex": "#C4B5A6",
       "name": "Primary Ink",
       "role": "Headings, body copy, and crisp borders",
       "usage_percentage": 12.0,
-      "contrast_text_hex": "#332929"
+      "contrast_text_hex": "#342A2A"
     },
     "text_secondary": {
       "hex": "#C4BBB0",
       "name": "Secondary Ink",
       "role": "Captions, metadata, and subdued labels",
       "usage_percentage": 6.0,
-      "contrast_text_hex": "#332929"
+      "contrast_text_hex": "#342A2A"
     },
     "accent_primary": {
       "hex": "#B13B29",
       "name": "Hero Accent",
       "role": "Primary CTAs, key brand marks, and focal highlights",
-      "usage_percentage": 6.88,
+      "usage_percentage": 6.76,
       "contrast_text_hex": "#FAF8F5"
     },
     "accent_secondary": {
@@ -77,7 +77,7 @@
       "usage_percentage": 1.0,
       "contrast_text_hex": "#FFFFFF"
     },
-    "color_harmony_notes": "Mathematically derived via CIELAB K-Means across 5 pins. Overall temperature is balanced with dark_moody polarity, earth-tone share 40.72%, and texture grain score 28.49.",
+    "color_harmony_notes": "Mathematically derived via CIELAB K-Means across 5 pins. Overall temperature is warm with dark_moody polarity, earth-tone share 53.32%, and texture grain score 28.49.",
     "forbidden_colors": [
       "Generic SaaS indigo/violet (#6366F1, #8B5CF6)",
       "Unrelated neon cyan (#00FFFF) unless explicitly in accent tokens"
@@ -149,26 +149,26 @@
     "component_guidelines": {
       "buttons": "Solid #B13B29 fill with #FAF8F5 bold uppercase label, 2px solid #B13B29, 4px 4px 0px #14110F; shift -2px/-2px on hover.",
       "cards": "Use #262320 surface with 2px solid #B13B29, radius 6px, and 4px 4px 0px #14110F.",
-      "navigation": "Sticky top bar on #332929 with bottom 2px solid #B13B29, high-contrast brand mark on left and single bold CTA on right.",
+      "navigation": "Sticky top bar on #342A2A with bottom 2px solid #B13B29, high-contrast brand mark on left and single bold CTA on right.",
       "hero_section": "Split or full-bleed showcase pairing display font (Fraunces) with high-res reference imagery and stamp badge.",
       "badges": "Pill (9999px) or sharp stamp tags in #6896D8 with #141210 monospace text (Space Mono)."
     },
     "anti_patterns": [
       "Do NOT use glossy corporate SaaS gradients, neon purple/cyan, or glassmorphism",
-      "Do NOT use sterile pure #FFFFFF backgrounds â€” always use warm sandstone/adobe cream or deep earth charcoal",
+      "Do NOT use sterile pure #FFFFFF backgrounds — always use warm sandstone/adobe cream or deep earth charcoal",
       "Do NOT use generic stock-photo icons; use bold folk-art silhouettes and stamp borders"
     ]
   },
   "generative_ai_prompts": {
     "global_style_prefix": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture",
-    "global_style_suffix": "anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
+    "global_style_suffix": "anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
     "negative_prompt": "modern corporate SaaS UI, glossy plastic 3D render, cyberpunk neon, sterile white background, generic stock clipart",
     "midjourney_parameters": "--v 6.1 --stylize 250 --ar 4:5",
     "use_case_templates": {
-      "hero_photography": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, signature hero shot on raw sandstone & handcrafted ceramic tableware, warm directional lighting, anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
-      "brand_mascot_illustration": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, folk-art mascot illustration, bold block-print terracotta and cobalt linework, distressed ink stamp feel, anchored in #332929 earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
-      "seamless_background_texture": "Seamless tileable surface texture, raw adobe sandstone and unglazed terracotta clay grain in #332929 and #B13B29, macro top-down",
-      "ui_icon_sticker": "Hand-stamped woodblock badge icon, thick #CDB59B ink outline, #B13B29 terracotta and #6896D8 cobalt spot colors, isolated"
+      "hero_photography": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, signature hero shot on raw sandstone & handcrafted ceramic tableware, warm directional lighting, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
+      "brand_mascot_illustration": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, folk-art mascot illustration, bold block-print terracotta and cobalt linework, distressed ink stamp feel, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
+      "seamless_background_texture": "Seamless tileable surface texture, raw adobe sandstone and unglazed terracotta clay grain in #342A2A and #B13B29, macro top-down",
+      "ui_icon_sticker": "Hand-stamped woodblock badge icon, thick #C4B5A6 ink outline, #B13B29 terracotta and #6896D8 cobalt spot colors, isolated"
     }
   },
   "reference_pins": [
@@ -176,27 +176,27 @@
       "id": "e1_AfqPShwYKW8mSRF7-GnI9udxwza2iD0vfHO4bquNHDYPOw3q7rdR",
       "title": "two small wooden toy animals sitting on top of a table",
       "source_url": "https://www.pinterest.com/pin/e1_AfqPShwYKW8mSRF7-GnI9udxwza2iD0vfHO4bquNHDYPOw3q7rdR/",
-      "local_path": "examples/coyote-burguer/references\\pin_01.jpg",
+      "local_path": "references/pin_01.jpg",
       "dominant_hex_colors": [
-        "#D1B99F",
-        "#C49A70",
-        "#9A744F"
+        "#C39A70",
+        "#D1B9A0",
+        "#9B744F"
       ],
       "visual_tags": [
         "folk-coyote-motif",
         "tactile-surface-grain",
         "sandstone-ochre"
       ],
-      "why_it_matters": "Pin #1: High tactile grain (score 27.15); anchors #D1B99F, #C49A70, #9A744F in the visual system."
+      "why_it_matters": "Pin #1: High tactile grain (score 27.15); anchors #C39A70, #D1B9A0, #9B744F in the visual system."
     },
     {
       "id": "e1_AfqPShyj7bNRtfe1Br_LpbQCDlLSJWXa9hkqwI-onpw6S9Feg8jd",
       "title": "Wolf under Starlight",
       "source_url": "https://www.pinterest.com/pin/e1_AfqPShyj7bNRtfe1Br_LpbQCDlLSJWXa9hkqwI-onpw6S9Feg8jd/",
-      "local_path": "examples/coyote-burguer/references\\pin_02.jpg",
+      "local_path": "references/pin_02.jpg",
       "dominant_hex_colors": [
-        "#808F97",
-        "#6A808A",
+        "#7F8F97",
+        "#697F8A",
         "#C63E30"
       ],
       "visual_tags": [
@@ -205,55 +205,55 @@
         "bold-flat-illustration",
         "cobalt-blue"
       ],
-      "why_it_matters": "Pin #2: Graphic form & silhouette reference; anchors #808F97, #6A808A, #C63E30 in the visual system."
+      "why_it_matters": "Pin #2: Graphic form & silhouette reference; anchors #7F8F97, #697F8A, #C63E30 in the visual system."
     },
     {
       "id": "e1_AfqPShwv6DMkJpE6CeLzlgDKFM0W0lF8VWEi5XO9p9gV81mBuRiz",
       "title": "a close up view of the surface of a piece of paper",
       "source_url": "https://www.pinterest.com/pin/e1_AfqPShwv6DMkJpE6CeLzlgDKFM0W0lF8VWEi5XO9p9gV81mBuRiz/",
-      "local_path": "examples/coyote-burguer/references\\pin_03.jpg",
+      "local_path": "references/pin_03.jpg",
       "dominant_hex_colors": [
-        "#A3978A",
-        "#928374",
-        "#B2AAA0"
+        "#A29689",
+        "#B1AA9F",
+        "#918172"
       ],
       "visual_tags": [
         "raw-mineral-stone-texture",
         "sandstone-ochre"
       ],
-      "why_it_matters": "Pin #3: High tactile grain (score 60.81); anchors #A3978A, #928374, #B2AAA0 in the visual system."
+      "why_it_matters": "Pin #3: High tactile grain (score 60.81); anchors #A29689, #B1AA9F, #918172 in the visual system."
     },
     {
       "id": "e1_AfqPShzr0lOYt6xSQKFLcU80nZrLJXgwDMJQRLra2FN79gCBFaTX",
       "title": "several clay cups with designs on them sitting on a blue table top next to each other",
       "source_url": "https://www.pinterest.com/pin/e1_AfqPShzr0lOYt6xSQKFLcU80nZrLJXgwDMJQRLra2FN79gCBFaTX/",
-      "local_path": "examples/coyote-burguer/references\\pin_04.jpg",
+      "local_path": "references/pin_04.jpg",
       "dominant_hex_colors": [
         "#2A282D",
-        "#1D3D60",
-        "#5C89CA"
+        "#1D3D5F",
+        "#5B89CA"
       ],
       "visual_tags": [
         "handcrafted-ceramics",
         "tactile-surface-grain"
       ],
-      "why_it_matters": "Pin #4: Graphic form & silhouette reference; anchors #2A282D, #1D3D60, #5C89CA in the visual system."
+      "why_it_matters": "Pin #4: Graphic form & silhouette reference; anchors #2A282D, #1D3D5F, #5B89CA in the visual system."
     },
     {
       "id": "e1_AfqPShwC8C6f47LiTDWfPjpU_ryr-wPFbUTDg6TtoTqeIuCXddVm",
       "title": "an image of two red dogs in the grass with chinese characters on them and one dog is standing up",
       "source_url": "https://www.pinterest.com/pin/e1_AfqPShwC8C6f47LiTDWfPjpU_ryr-wPFbUTDg6TtoTqeIuCXddVm/",
-      "local_path": "examples/coyote-burguer/references\\pin_05.jpg",
+      "local_path": "references/pin_05.jpg",
       "dominant_hex_colors": [
-        "#646555",
-        "#747567",
-        "#515441"
+        "#656656",
+        "#757668",
+        "#525442"
       ],
       "visual_tags": [
         "folk-coyote-motif",
         "bold-flat-illustration"
       ],
-      "why_it_matters": "Pin #5: Graphic form & silhouette reference; anchors #646555, #747567, #515441 in the visual system."
+      "why_it_matters": "Pin #5: Graphic form & silhouette reference; anchors #656656, #757668, #525442 in the visual system."
     }
   ]
 }

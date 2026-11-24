@@ -148,8 +148,12 @@ async def _scrape_via_resource_api(
 
     Returns (board_title, pins, is_private_detected).
     """
+    pws_handler = "www/[username]/[slug].js"
     try:
-        await client.get(canonical_url, timeout=15.0)
+        r_page = await client.get(canonical_url, timeout=15.0)
+        match_handler = re.search(r'"initialHandlerId"\s*:\s*"([^"]+)"', r_page.text)
+        if match_handler:
+            pws_handler = match_handler.group(1)
     except httpx.HTTPError:
         return board_slug.replace("-", " ").title(), [], False
 
@@ -159,7 +163,7 @@ async def _scrape_via_resource_api(
         "X-Requested-With": "XMLHttpRequest",
         "X-CSRFToken": csrf,
         "X-Pinterest-AppState": "active",
-        "X-Pinterest-PWS-Handler": "www/[username]/[slug].js",
+        "X-Pinterest-PWS-Handler": pws_handler,
         "Referer": canonical_url,
     }
 
@@ -289,6 +293,58 @@ async def _scrape_via_resource_api(
         bookmark = next_bookmark
 
     return board_title, pins, False
+
+
+async def _scrape_via_pidgets_api(
+    client: httpx.AsyncClient,
+    username: str,
+    board_slug: str,
+    max_pins: int,
+) -> tuple[str, list[ScrapedPin]]:
+    """Fallback 1: Official public Pinterest Widgets API (zero CSRF or PWS handler required)."""
+    pidget_url = f"https://widgets.pinterest.com/v3/pidgets/boards/{username}/{board_slug}/pins/"
+    try:
+        resp = await client.get(pidget_url, timeout=10.0)
+        if resp.status_code != 200:
+            return board_slug.replace("-", " ").title(), []
+        payload = resp.json().get("data") or {}
+    except Exception:
+        return board_slug.replace("-", " ").title(), []
+
+    board_info = payload.get("board") or {}
+    board_title = str(board_info.get("name") or board_slug.replace("-", " ").title()).strip()
+    raw_pins = payload.get("pins") or []
+    if not raw_pins:
+        return board_title, []
+
+    pins: list[ScrapedPin] = []
+    seen_ids: set[str] = set()
+    for item in raw_pins:
+        if not isinstance(item, dict):
+            continue
+        images = item.get("images") or {}
+        img_obj = images.get("237x") or images.get("236x") or next(iter(images.values()), None)
+        if not isinstance(img_obj, dict) or not img_obj.get("url"):
+            continue
+        pin_id = str(item.get("id") or _extract_pin_id("", img_obj["url"]))
+        if pin_id in seen_ids:
+            continue
+        seen_ids.add(pin_id)
+        desc = str(item.get("description") or "").strip()
+        best_url = _upgrade_candidates(str(img_obj["url"]))[0]
+        pins.append(
+            ScrapedPin(
+                pin_id=pin_id,
+                index=len(pins) + 1,
+                title=desc[:80] or f"Reference Pin {len(pins) + 1}",
+                description=desc[:300],
+                pin_url=f"https://www.pinterest.com/pin/{pin_id}/",
+                image_url=best_url,
+            )
+        )
+        if len(pins) >= max_pins:
+            break
+    return board_title, pins
 
 
 async def _scrape_via_rss(
@@ -543,15 +599,15 @@ def _scrape_local_folder(folder_path: Path, max_pins: int) -> ScrapedBoard:
             index=idx,
             title=f.stem.replace("-", " ").replace("_", " ").title(),
             description=f"Local reference image {f.name}",
-            pin_url=f.resolve().as_uri(),
+            pin_url=f"local://{slug}/{f.name}",
             image_url=f.resolve().as_uri(),
             local_path=str(f.resolve()),
         )
         for idx, f in enumerate(files, start=1)
     ]
     return ScrapedBoard(
-        board_url=str(folder_path.resolve()),
-        canonical_url=folder_path.resolve().as_uri(),
+        board_url=f"local://{slug}/",
+        canonical_url=f"local://{slug}/",
         username="local",
         board_slug=slug,
         board_title=title,
@@ -591,6 +647,20 @@ async def scrape_board(
                 board_title=board_title,
                 source_method="resource_api",
                 pins=api_pins[:max_pins],
+            )
+
+        pidget_title, pidget_pins = await _scrape_via_pidgets_api(
+            client, username, board_slug, max_pins
+        )
+        if pidget_pins:
+            return ScrapedBoard(
+                board_url=board_url,
+                canonical_url=canonical_url,
+                username=username,
+                board_slug=board_slug,
+                board_title=pidget_title,
+                source_method="pidgets_api",
+                pins=pidget_pins[:max_pins],
             )
 
         rss_title, rss_pins = await _scrape_via_rss(

@@ -1,0 +1,31 @@
+# AGENTS.md — Visual Identity Contract ({{ manifest.project_name }})
+
+> **Compact Agent Directive:** Enforce these tokens on every front-end file. Do not use default Tailwind indigo/slate palettes.
+
+## 1. Mandatory Tokens
+- **Archetype:** `{{ manifest.frontend_ui_rules.aesthetic_archetype }}`
+- **Canvas & Surfaces:**
+  - Primary BG: `{{ manifest.color_system.background_primary.hex }}` (ink: `{{ manifest.color_system.background_primary.contrast_text_hex }}`)
+  - Contrast Band BG: `{{ manifest.color_system.background_secondary.hex }}` (ink: `{{ manifest.color_system.background_secondary.contrast_text_hex }}`)
+  - Card Surface: `{{ manifest.color_system.surface_card.hex }}` (ink: `{{ manifest.color_system.surface_card.contrast_text_hex }}`)
+- **Ink & Accents:**
+  - Text Primary: `{{ manifest.color_system.text_primary.hex }}` | Text Secondary: `{{ manifest.color_system.text_secondary.hex }}`
+  - Primary CTA Accent: `{{ manifest.color_system.accent_primary.hex }}` (ink: `{{ manifest.color_system.accent_primary.contrast_text_hex }}`)
+  - Supporting Badge Accent: `{{ manifest.color_system.accent_secondary.hex }}` (ink: `{{ manifest.color_system.accent_secondary.contrast_text_hex }}`)
+- **Typography:**
+  - Display: `'{{ manifest.typography.display_heading.family_recommended }}'` (`{{ manifest.typography.display_heading.weight }}`, `{{ manifest.typography.display_heading.text_transform }}`, tracking `{{ manifest.typography.display_heading.letter_spacing }}`)
+  - Section: `'{{ manifest.typography.section_heading.family_recommended }}'` (`{{ manifest.typography.section_heading.weight }}`, `{{ manifest.typography.section_heading.text_transform }}`)
+  - Body: `'{{ manifest.typography.body_copy.family_recommended }}'` | Mono: `'{{ manifest.typography.monospace_accent.family_recommended }}'`
+  - Import URL: `{{ manifest.typography.google_fonts_import_url }}`
+- **Geometry:**
+  - Border: `{{ manifest.frontend_ui_rules.border_style }}`
+  - Shadow: `{{ manifest.frontend_ui_rules.shadow_style }}`
+  - Radii: `sm={{ manifest.frontend_ui_rules.border_radius_tokens.sm }}`, `md={{ manifest.frontend_ui_rules.border_radius_tokens.md }}`, `lg={{ manifest.frontend_ui_rules.border_radius_tokens.lg }}`, `pill={{ manifest.frontend_ui_rules.border_radius_tokens.pill }}`
+
+## 2. Pre-Commit UI Verification Checklist
+- [ ] Google Fonts `<link>` for `{{ manifest.typography.display_heading.family_recommended }}` & `{{ manifest.typography.body_copy.family_recommended }}` is loaded.
+- [ ] `tokens.css` variables (or `tailwind.theme.json` tokens) are imported at root.
+- [ ] All interactive buttons and cards use `border: {{ manifest.frontend_ui_rules.border_style }}` and `box-shadow: {{ manifest.frontend_ui_rules.shadow_style }}`.
+{% for anti in manifest.frontend_ui_rules.anti_patterns -%}
+- [ ] Verified Violation-Free: {{ anti }}
+{% endfor %}

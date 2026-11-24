@@ -1,0 +1,66 @@
+---
+description: JSX/TSX & CSS Component Patterns for {{ manifest.project_name }} ({{ manifest.frontend_ui_rules.aesthetic_archetype }})
+globs: ["**/*.tsx", "**/*.jsx", "**/*.css", "**/*.scss", "**/*.html", "**/*.vue", "**/*.svelte"]
+alwaysApply: true
+---
+
+# Cursor UI Component Patterns — {{ manifest.project_name }}
+
+When generating or editing UI components, apply these exact code patterns instead of generic Shadcn/Tailwind defaults.
+
+## 1. JSX / Tailwind Component Blueprints
+
+### Primary CTA Button
+```tsx
+<button
+  className="inline-flex items-center justify-center px-5 py-3 font-mono font-bold uppercase tracking-wider transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
+  style={{ '{{' }}
+    backgroundColor: "{{ manifest.color_system.accent_primary.hex }}",
+    color: "{{ manifest.color_system.accent_primary.contrast_text_hex }}",
+    border: "{{ manifest.frontend_ui_rules.border_style }}",
+    borderRadius: "{{ manifest.frontend_ui_rules.border_radius_tokens.md }}",
+    boxShadow: "{{ manifest.frontend_ui_rules.shadow_style }}",
+  {{ '}}' }}
+>
+  {children}
+</button>
+```
+
+### Elevated Feature / Product Card
+```tsx
+<article
+  className="p-6"
+  style={{ '{{' }}
+    backgroundColor: "{{ manifest.color_system.surface_card.hex }}",
+    color: "{{ manifest.color_system.surface_card.contrast_text_hex }}",
+    border: "{{ manifest.frontend_ui_rules.border_style }}",
+    borderRadius: "{{ manifest.frontend_ui_rules.border_radius_tokens.lg }}",
+    boxShadow: "{{ manifest.frontend_ui_rules.shadow_style }}",
+  {{ '}}' }}
+>
+  {children}
+</article>
+```
+
+### Stamp / Pill Badge
+```tsx
+<span
+  className="inline-flex items-center px-3 py-1 text-xs font-mono font-bold uppercase"
+  style={{ '{{' }}
+    backgroundColor: "{{ manifest.color_system.accent_secondary.hex }}",
+    color: "{{ manifest.color_system.accent_secondary.contrast_text_hex }}",
+    border: "{{ manifest.frontend_ui_rules.border_style }}",
+    borderRadius: "{{ manifest.frontend_ui_rules.border_radius_tokens.pill }}",
+  {{ '}}' }}
+>
+  {label}
+</span>
+```
+
+## 2. Hard Anti-Patterns
+{% for anti in manifest.frontend_ui_rules.anti_patterns -%}
+- {{ anti }}
+{% endfor %}
+{% for fc in manifest.color_system.forbidden_colors -%}
+- Forbidden Color: {{ fc }}
+{% endfor %}

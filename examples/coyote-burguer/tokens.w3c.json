@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://tr.designtokens.org/format/",
   "brand": {
     "meta": {
@@ -18,12 +18,12 @@
     "color": {
       "background": {
         "primary": {
-          "$value": "#332929",
+          "$value": "#342A2A",
           "$type": "color",
           "$description": "Main page background and negative space"
         },
         "secondary": {
-          "$value": "#CDB59B",
+          "$value": "#C4B5A6",
           "$type": "color",
           "$description": "High-contrast dark/inverted bands, footers, and feature callouts"
         },
@@ -35,7 +35,7 @@
       },
       "text": {
         "primary": {
-          "$value": "#CDB59B",
+          "$value": "#C4B5A6",
           "$type": "color",
           "$description": "Headings, body copy, and crisp borders"
         },

@@ -120,6 +120,53 @@ def _build_w3c_design_tokens(manifest: VisualIdentityManifest) -> dict:
     }
 
 
+def _build_simulator_copy(manifest: VisualIdentityManifest) -> dict:
+    """Derive placeholder storefront/app/poster copy for the Studio simulator from the board itself.
+
+    Nothing here is brand-specific: names, taglines and tags come from mood keywords,
+    the archetype label and each reference pin's visual tags.
+    """
+    generic = {"warm", "cool", "neutral", "balanced", "high_contrast", "dark_moody", "light_airy"}
+    kws = [k.replace("-", " ").replace("_", " ").strip() for k in manifest.mood_keywords]
+    kws = [k for k in kws if k and k.replace(" ", "_") not in generic] or ["signature", "craft", "collection"]
+    while len(kws) < 3:
+        kws.append(kws[-1])
+
+    pins = manifest.reference_pins
+    items = []
+    for i in range(3):
+        pin = pins[i] if i < len(pins) else (pins[-1] if pins else None)
+        tags = ", ".join(pin.visual_tags[:3]) if pin and pin.visual_tags else kws[i]
+        items.append(
+            {
+                "tag": f"Selección #{i + 1:02d}",
+                "name": f"{kws[i].upper()} SIGNATURE",
+                "desc": f"Pieza de ejemplo inspirada en el Pin #{pin.id[-4:] if pin else i + 1}: {tags}.",
+                "price": "$00.00",
+            }
+        )
+
+    first_pin = pins[0] if pins else None
+    return {
+        "nav": ["COLECCIÓN", "HISTORIA", "CONTACTO"],
+        "nav_cta": "EXPLORAR",
+        "hero_pill": " • ".join(k.upper() for k in kws[:3]),
+        "hero_title": manifest.project_name.upper(),
+        "hero_copy": manifest.brand_essence_summary,
+        "hero_cta": "Ver colección",
+        "products": items,
+        "item_cta": "Agregar",
+        "checkout_cta": "Confirmar pedido",
+        "order_id": "ORDEN #001",
+        "loyalty_title": f"CLUB {manifest.project_name.upper()}",
+        "loyalty_hint": "¡Completa tu colección para desbloquear la edición limitada!",
+        "poster_tagline": " • ".join(k.upper() for k in kws[:3]),
+        "ticket_sub": manifest.frontend_ui_rules.aesthetic_archetype.upper(),
+        "motif_pin": "#1",
+        "motif_tags": ", ".join(first_pin.visual_tags[:2]) if first_pin and first_pin.visual_tags else kws[0],
+    }
+
+
 def export_brand_kit(
     manifest: VisualIdentityManifest,
     output_dir: Path,
@@ -265,8 +312,8 @@ def export_brand_kit(
         ("Warning", "--brand-semantic-warning", "semantic_warning", manifest.color_system.semantic_warning),
         ("Success", "--brand-semantic-success", "semantic_success", manifest.color_system.semantic_success),
     ]
+    # visual-identity.json is intentionally omitted: the page already embeds it once as `manifestData`.
     payload_versions = {
-        "visual-identity.json": manifest_json_str,
         "AGENTS.md": agents_md_content,
         "cursor-visual-identity.mdc": cursor_mdc_content,
         "SKILL.md": skill_md_content,
@@ -283,6 +330,7 @@ def export_brand_kit(
     preview_path.write_text(
         preview_tpl.render(
             manifest=manifest,
+            sim=_build_simulator_copy(manifest),
             manifest_json=safe_manifest_json,
             payload_versions_json=safe_payload_versions_json,
             tokens_css=tokens_css,

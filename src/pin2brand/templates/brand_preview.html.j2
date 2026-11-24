@@ -627,8 +627,8 @@
             <span class="pill pill-accent">Patrón Gráfico / Motif</span>
           </div>
           <div class="texture-body">
-            <h3>Trama Block-Print & Halftone</h3>
-            <p>{{ manifest.frontend_ui_rules.texture_and_effects[1] if manifest.frontend_ui_rules.texture_and_effects | length > 1 else "Contraste de pigmentos planos estilo grabado artesanal." }}</p>
+            <h3>Trama y Motivos Gráficos del Tablero</h3>
+            <p>{{ manifest.frontend_ui_rules.texture_and_effects[1] if manifest.frontend_ui_rules.texture_and_effects | length > 1 else "Contraste de pigmentos y motivos gráficos repetibles extraídos de los pines." }}</p>
           </div>
         </div>
 
@@ -637,7 +637,7 @@
             <span class="pill">Ritmo Cromático & Empaque</span>
           </div>
           <div class="texture-body">
-            <h3>Contraste Terracota / Cobalto / Arena</h3>
+            <h3>Contraste {{ manifest.color_system.accent_primary.hex }} / {{ manifest.color_system.accent_secondary.hex }} / {{ manifest.color_system.background_secondary.hex }}</h3>
             <p>{{ manifest.color_system.color_harmony_notes }}</p>
           </div>
         </div>
@@ -746,49 +746,49 @@
           <div class="mockup-nav">
             <div class="brand-mark">{{ manifest.project_name }}</div>
             <div style="display:flex; gap:16px; align-items:center; font-family:var(--brand-font-mono); font-size:0.78rem;">
-              <span>MENÚ</span>
-              <span>HISTORIA FOLK</span>
-              <span>DESIERTO</span>
-              <button class="btn" style="padding:7px 14px;">ORDENAR AHORA</button>
+              <span>{{ sim.nav[0] }}</span>
+              <span>{{ sim.nav[1] }}</span>
+              <span>{{ sim.nav[2] }}</span>
+              <button class="btn" style="padding:7px 14px;">{{ sim.nav_cta }}</button>
             </div>
           </div>
           <div class="mockup-body">
             <div style="background:var(--brand-bg-secondary); color:var(--brand-bg-secondary-contrast); border:var(--brand-border); border-radius:var(--brand-radius-lg); box-shadow:var(--brand-shadow); padding:28px;">
-              <span class="pill pill-accent">Fuego, Barro & Carbón</span>
-              <h3 style="font-family:var(--brand-font-display); font-size:2.3rem; margin:10px 0 8px; text-transform:uppercase;">EL COYOTE BAJO LA ESTRELLA</h3>
-              <p style="max-width:680px; margin:0 0 16px;">Smash burgers al carbón de mezquite con identidad gráfica inspirada en cerámica terracota, cantera del desierto y pigmento azul cobalto.</p>
-              <button class="btn">Ver Menú de Temporada</button>
+              <span class="pill pill-accent">{{ sim.hero_pill }}</span>
+              <h3 style="font-family:var(--brand-font-display); font-size:2.3rem; margin:10px 0 8px; text-transform:uppercase;">{{ sim.hero_title }}</h3>
+              <p style="max-width:680px; margin:0 0 16px;">{{ sim.hero_copy }}</p>
+              <button class="btn">{{ sim.hero_cta }}</button>
             </div>
 
             <div class="menu-grid">
               <div class="menu-item">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span class="pill">Sello #01</span>
-                  <span style="font-family:var(--brand-font-mono); font-weight:700;">$165 MXN</span>
+                  <span class="pill">{{ sim.products[0].tag }}</span>
+                  <span style="font-family:var(--brand-font-mono); font-weight:700;">{{ sim.products[0].price }}</span>
                 </div>
-                <h4 style="font-family:var(--brand-font-heading); font-size:1.45rem; margin:12px 0 6px;">COYOTE TERRACOTA SMASH</h4>
-                <p style="font-size:0.86rem; color:var(--brand-text-secondary); margin:0 0 14px;">Doble carne smash con costra crujiente, queso cheddar ahumado, cebolla caramelizada en mezquite y salsa roja tatemada.</p>
-                <button class="btn" style="width:100%;">Agregar a la Orden</button>
+                <h4 style="font-family:var(--brand-font-heading); font-size:1.45rem; margin:12px 0 6px;">{{ sim.products[0].name }}</h4>
+                <p style="font-size:0.86rem; color:var(--brand-text-secondary); margin:0 0 14px;">{{ sim.products[0].desc }}</p>
+                <button class="btn" style="width:100%;">{{ sim.item_cta }}</button>
               </div>
 
               <div class="menu-item">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span class="pill pill-accent">Favorita Folk</span>
-                  <span style="font-family:var(--brand-font-mono); font-weight:700;">$185 MXN</span>
+                  <span class="pill pill-accent">{{ sim.products[1].tag }}</span>
+                  <span style="font-family:var(--brand-font-mono); font-weight:700;">{{ sim.products[1].price }}</span>
                 </div>
-                <h4 style="font-family:var(--brand-font-heading); font-size:1.45rem; margin:12px 0 6px;">ESTRELLA DEL DESIERTO</h4>
-                <p style="font-size:0.86rem; color:var(--brand-text-secondary); margin:0 0 14px;">Tocino grueso glaseado en agave, chile poblano asado, alioli de ajo rostizado en pan brioche sellado al hierro.</p>
-                <button class="btn" style="width:100%;">Agregar a la Orden</button>
+                <h4 style="font-family:var(--brand-font-heading); font-size:1.45rem; margin:12px 0 6px;">{{ sim.products[1].name }}</h4>
+                <p style="font-size:0.86rem; color:var(--brand-text-secondary); margin:0 0 14px;">{{ sim.products[1].desc }}</p>
+                <button class="btn" style="width:100%;">{{ sim.item_cta }}</button>
               </div>
 
               <div class="menu-item">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span class="pill">Cerámica Fría</span>
-                  <span style="font-family:var(--brand-font-mono); font-weight:700;">$75 MXN</span>
+                  <span class="pill">{{ sim.products[2].tag }}</span>
+                  <span style="font-family:var(--brand-font-mono); font-weight:700;">{{ sim.products[2].price }}</span>
                 </div>
-                <h4 style="font-family:var(--brand-font-heading); font-size:1.45rem; margin:12px 0 6px;">SODA AZUL COBALTO & AGAVE</h4>
-                <p style="font-size:0.86rem; color:var(--brand-text-secondary); margin:0 0 14px;">Servida en vaso de barro artesanal esmaltado en azul cobalto con infusión de cítricos del desierto y sal de gusano.</p>
-                <button class="btn btn-secondary" style="width:100%;">Agregar Bebida</button>
+                <h4 style="font-family:var(--brand-font-heading); font-size:1.45rem; margin:12px 0 6px;">{{ sim.products[2].name }}</h4>
+                <p style="font-size:0.86rem; color:var(--brand-text-secondary); margin:0 0 14px;">{{ sim.products[2].desc }}</p>
+                <button class="btn btn-secondary" style="width:100%;">{{ sim.item_cta }}</button>
               </div>
             </div>
           </div>
@@ -801,10 +801,10 @@
           <div class="phone-frame">
             <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:var(--brand-border);">
               <span style="font-family:var(--brand-font-display); font-size:1.1rem;">{{ manifest.project_name }}</span>
-              <span class="pill">ORDEN #409</span>
+              <span class="pill">{{ sim.order_id }}</span>
             </div>
             <div style="margin-top:16px; background:var(--brand-surface-card); border:var(--brand-border); border-radius:var(--brand-radius-md); padding:14px;">
-              <small style="font-family:var(--brand-font-mono); color:var(--brand-text-secondary);">CLUB DEL COYOTE — SELLOS DE BARRO</small>
+              <small style="font-family:var(--brand-font-mono); color:var(--brand-text-secondary);">{{ sim.loyalty_title }}</small>
               <div class="stamp-row">
                 <div class="stamp-circle">★</div>
                 <div class="stamp-circle">★</div>
@@ -812,20 +812,20 @@
                 <div class="stamp-circle">★</div>
                 <div class="stamp-circle" style="background:transparent; color:var(--brand-text-secondary);">5</div>
               </div>
-              <div style="font-size:0.8rem; color:var(--brand-text-secondary);">¡1 sello más para desbloquear tu Taza de Barro Azul Cobalto edición limitada!</div>
+              <div style="font-size:0.8rem; color:var(--brand-text-secondary);">{{ sim.loyalty_hint }}</div>
             </div>
 
             <div style="margin-top:14px; background:var(--brand-bg-secondary); color:var(--brand-bg-secondary-contrast); border:var(--brand-border); border-radius:var(--brand-radius-md); padding:14px;">
               <div style="display:flex; justify-content:space-between; font-family:var(--brand-font-mono); font-size:0.78rem; font-weight:700;">
-                <span>1x COYOTE TERRACOTA SMASH</span>
+                <span>1x {{ sim.products[0].name }}</span>
                 <span>$165</span>
               </div>
               <div style="display:flex; justify-content:space-between; font-family:var(--brand-font-mono); font-size:0.78rem; font-weight:700; margin-top:6px;">
-                <span>1x SODA AZUL COBALTO</span>
+                <span>1x {{ sim.products[2].name }}</span>
                 <span>$75</span>
               </div>
               <hr style="border:none; border-top:1px dashed currentColor; margin:10px 0;" />
-              <button class="btn" style="width:100%;">Confirmar Pedido • $240 MXN</button>
+              <button class="btn" style="width:100%;">{{ sim.checkout_cta }}</button>
             </div>
           </div>
 
@@ -836,9 +836,9 @@
               Un agente de código que lee el <code>visual-identity.json</code> y el <code>cursor-visual-identity.mdc</code> sabe que esta app:
             </p>
             <ul style="font-size:0.9rem; display:flex; flex-direction:column; gap:8px;">
-              <li>Usa el contraste entre el **carbón tierra (`{{ manifest.color_system.background_primary.hex }}`)** y la **cantera arena (`{{ manifest.color_system.background_secondary.hex }}`)** para separar tarjetas de fidelidad del ticket de compra.</li>
-              <li>Convierte la estrella roja del **Pin #2** en los **sellos de lealtad** en terracota (`{{ manifest.color_system.accent_primary.hex }}`).</li>
-              <li>Reserva el **azul cobalto (`{{ manifest.color_system.accent_secondary.hex }}`)** del **Pin #4** para badges de estado (`ORDEN #409`).</li>
+              <li>Usa el contraste entre <strong>{{ manifest.color_system.background_primary.hex }}</strong> y <strong>{{ manifest.color_system.background_secondary.hex }}</strong> para separar tarjetas de fidelidad del ticket de compra.</li>
+              <li>Toma el motivo del <strong>Pin {{ sim.motif_pin }}</strong> ({{ sim.motif_tags }}) para los sellos de lealtad en <strong>{{ manifest.color_system.accent_primary.hex }}</strong>.</li>
+              <li>Reserva <strong>{{ manifest.color_system.accent_secondary.hex }}</strong> para badges de estado (<code>{{ sim.order_id }}</code>).</li>
             </ul>
           </div>
         </div>
@@ -849,10 +849,10 @@
         <div class="branding-grid">
           <div class="poster-card">
             <span class="pill">SERIGRAFÍA / POSTER DE MARCA</span>
-            <div style="font-size:4.2rem; margin:14px 0 4px;">🐺 ★</div>
+            <div style="font-size:4.2rem; margin:14px 0 4px;">★</div>
             <h3 style="font-family:var(--brand-font-display); font-size:2.4rem; margin:6px 0; text-transform:uppercase;">{{ manifest.project_name }}</h3>
             <p style="font-family:var(--brand-font-mono); font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase;">
-              BARRO • MEZQUITE • ESTRELLA DEL DESIERTO
+              {{ sim.poster_tagline }}
             </p>
             <div style="margin-top:18px; padding-top:14px; border-top:2px solid currentColor; font-family:var(--brand-font-mono); font-size:0.75rem;">
               PALETA: {{ manifest.color_system.background_primary.hex }} • {{ manifest.color_system.accent_primary.hex }} • {{ manifest.color_system.accent_secondary.hex }} • {{ manifest.color_system.background_secondary.hex }}
@@ -862,7 +862,7 @@
           <div class="receipt-ticket">
             <div style="text-align:center; border-bottom:2px dashed currentColor; padding-bottom:12px; margin-bottom:14px;">
               <strong style="font-size:1.15rem;">*** {{ manifest.project_name }} ***</strong><br/>
-              <span style="font-size:0.76rem;">OUTPOST DESIERTO • LOTE ARTESANAL #05</span>
+              <span style="font-size:0.76rem;">{{ sim.ticket_sub }}</span>
             </div>
             <div style="font-size:0.82rem; display:flex; flex-direction:column; gap:6px;">
               <div>ARQUETIPO: {{ manifest.frontend_ui_rules.aesthetic_archetype }}</div>
@@ -884,7 +884,7 @@
         <div class="split-compare">
           <div class="generic-box">
             <span style="background:#EEF2FF; color:#4338CA; padding:4px 10px; border-radius:999px; font-size:0.75rem; font-weight:600;">❌ SIN PIN2BRAND (Output Típico de IA)</span>
-            <h3 style="font-size:1.6rem; margin:14px 0 8px; color:#0F172A;">Welcome to Coyote Burger</h3>
+            <h3 style="font-size:1.6rem; margin:14px 0 8px; color:#0F172A;">Welcome to {{ manifest.project_name }}</h3>
             <p style="color:#64748B; font-size:0.92rem; margin:0 0 18px;">
               Cuando le pides una web a un agente sin identidad visual, usa fondo blanco `#F8FAFC`, fuente Inter, bordes grises suaves y el clásico botón morado/indigo de SaaS corporativo.
             </p>
@@ -897,7 +897,7 @@
             <p style="color:var(--brand-text-secondary); font-size:0.92rem; margin:0 0 18px;">
               El agente aplica tu paleta CIELAB real (<code>{{ manifest.color_system.background_primary.hex }}</code>, <code>{{ manifest.color_system.accent_primary.hex }}</code>, <code>{{ manifest.color_system.accent_secondary.hex }}</code>), tipografía <strong>{{ manifest.typography.display_heading.family_recommended }}</strong>, bordes de grabado y sombras duras.
             </p>
-            <button class="btn">Ordenar al Fuego →</button>
+            <button class="btn">{{ sim.item_cta }} →</button>
           </div>
         </div>
       </div>

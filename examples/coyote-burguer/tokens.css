@@ -3,19 +3,19 @@
 
 :root {
   /* Color Tokens */
-  --brand-bg-primary: #31292A;
+  --brand-bg-primary: #32292A;
   --brand-bg-primary-contrast: #F6F2EA;
-  --brand-bg-secondary: #C4B6A6;
+  --brand-bg-secondary: #CEB59B;
   --brand-bg-secondary-contrast: #141210;
   --brand-surface-card: #262320;
   --brand-surface-card-contrast: #F6F2EA;
 
   --brand-text-primary: #F6F2EA;
-  --brand-text-secondary: #C4B6A6;
+  --brand-text-secondary: #CEB59B;
 
-  --brand-accent-primary: #9B3721;
+  --brand-accent-primary: #9B3821;
   --brand-accent-primary-contrast: #FAF8F5;
-  --brand-accent-secondary: #5785C6;
+  --brand-accent-secondary: #5784C5;
   --brand-accent-secondary-contrast: #141210;
 
   --brand-semantic-warning: #D97706;
@@ -32,6 +32,6 @@
   --brand-radius-md: 6px;
   --brand-radius-lg: 10px;
   --brand-radius-pill: 9999px;
-  --brand-border: 2px solid #9B3721;
+  --brand-border: 2px solid #9B3821;
   --brand-shadow: 4px 4px 0px #14110F;
 }

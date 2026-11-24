@@ -172,6 +172,50 @@ def test_end_to_end_local_folder_w3c_dtcg_and_templates(tmp_path: Path) -> None:
     assert "payloadVersions" in html_raw
 
 
+def test_simulator_is_dynamic_and_gemini_uses_rest(tmp_path: Path, monkeypatch) -> None:
+    """Studio copy must come from the board (no leaked demo brand), and Gemini must go through plain httpx REST."""
+    src = tmp_path / "french-perfume-atelier"
+    src.mkdir()
+    for i, (a, b) in enumerate([((235, 228, 218), (120, 90, 70)), ((30, 30, 34), (200, 170, 120))], start=1):
+        img = Image.new("RGB", (300, 300), a)
+        ImageDraw.Draw(img).ellipse([90, 90, 210, 210], fill=b)
+        img.save(src / f"p{i}.jpg", format="JPEG")
+
+    result = asyncio.run(
+        run_pin2brand_pipeline(board_url=str(src), output_root=tmp_path / "out", max_pins=5, force_offline=True)
+    )
+    html = result["artifacts"]["brand_preview_html"].read_text(encoding="utf-8")
+    for leaked in ["COYOTE", "MXN", "mezquite", "MEZQUITE", "Taza de Barro"]:
+        assert leaked not in html
+    assert "Welcome to French Perfume Atelier" in html
+    assert "FRENCH PERFUME ATELIER" in html  # hero title derives from the board
+    assert '"visual-identity.json":' not in html  # manifest embedded once, not duplicated in payloadVersions
+
+    from pin2brand import synthesizer
+
+    captured: dict = {}
+
+    class FakeResp:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict:
+            return {"candidates": [{"content": {"parts": [{"text": result["manifest"].model_dump_json()}]}}]}
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        captured["headers"] = kwargs.get("headers", {})
+        return FakeResp()
+
+    monkeypatch.setattr(synthesizer.httpx, "post", fake_post)
+    manifest = synthesizer._synthesize_with_gemini(
+        result["board"], result["math_report"], "gemini-2.5-flash", "test-key"
+    )
+    assert "models/gemini-2.5-flash:generateContent" in captured["url"]
+    assert captured["headers"]["x-goog-api-key"] == "test-key"
+    assert manifest.project_name == result["manifest"].project_name
+
+
 def test_mcp_security_boundaries() -> None:
     """Ensure MCP server blocks arbitrary local directory scanning and path traversal."""
     with pytest.raises(ValueError, match="Local directory scanning via MCP is disabled"):

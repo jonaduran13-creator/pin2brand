@@ -243,13 +243,50 @@ def _sample_image_pixels_and_texture(
         )
         texture_score = round(float(np.std(lap)), 2)
 
-        # 2D Gaussian center-saliency mask (sigma = 0.36 * size) so central subject outweights outer background borders
+        # Adaptive spatial saliency: detect full-bleed textures vs studio-isolated subjects
         coords = np.linspace(-1.0, 1.0, size, dtype=np.float64)
         yy, xx = np.meshgrid(coords, coords, indexing="ij")
         gaussian_center = np.exp(-((xx**2 + yy**2) / (2.0 * (0.52**2))))
-        weights = (0.35 + 0.65 * gaussian_center).reshape(-1)
+
+        c0, c1 = size // 4, (3 * size) // 4
+        center_lap_std = float(np.std(lap[c0:c1, c0:c1])) or 1.0
+        border_ratio = texture_score / center_lap_std
+        if texture_score >= 30.0 and border_ratio >= 0.78:
+            # Full-bleed surface texture (e.g. stone, paper, repeating pattern): sample evenly
+            weights_2d = 0.78 + 0.22 * gaussian_center
+        else:
+            weights_2d = 0.35 + 0.65 * gaussian_center
+
+        # 4-Corner Uniform Backdrop Suppression (downweight solid studio backdrop if all 4 corners match)
+        patch = max(6, size // 15)
+        corners_rgb = np.array(
+            [
+                arr[:patch, :patch].reshape(-1, 3).mean(axis=0),
+                arr[:patch, -patch:].reshape(-1, 3).mean(axis=0),
+                arr[-patch:, :patch].reshape(-1, 3).mean(axis=0),
+                arr[-patch:, -patch:].reshape(-1, 3).mean(axis=0),
+            ],
+            dtype=np.uint8,
+        )
+        corners_lab = _rgb_to_lab(corners_rgb)
+        max_corner_diff = max(
+            float(np.linalg.norm(corners_lab[i] - corners_lab[j]))
+            for i in range(4)
+            for j in range(i + 1, 4)
+        )
+        center_mean_rgb = arr[c0:c1, c0:c1].reshape(-1, 3).mean(axis=0).astype(np.uint8)[None, :]
+        center_lab = _rgb_to_lab(center_mean_rgb)[0]
+        corner_mean_lab = corners_lab.mean(axis=0)
+
+        flat_pixels = arr.reshape(-1, 3)
+        weights = weights_2d.reshape(-1)
+        if max_corner_diff < 6.5 and float(np.linalg.norm(center_lab - corner_mean_lab)) >= 10.0:
+            all_lab = _rgb_to_lab(flat_pixels)
+            dist_to_backdrop = np.linalg.norm(all_lab - corner_mean_lab[None, :], axis=1)
+            weights = np.where(dist_to_backdrop < 7.5, weights * 0.25, weights)
+
         probs = weights / float(np.sum(weights))
-        return arr.reshape(-1, 3), texture_score, probs
+        return flat_pixels, texture_score, probs
 
 
 def _extract_k_colors_lab(

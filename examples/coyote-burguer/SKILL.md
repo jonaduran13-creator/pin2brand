@@ -15,21 +15,21 @@ Use this skill whenever building UI screens, brand assets, or image prompts for 
 ## Step 2: Apply Archetype & Component Geometry
 - **Archetype:** Artisanal Desert Folk & Handcrafted Street-Food Identity
 - **Layout Grid:** Asymmetric editorial bento grid with bold bordered containers and tactile surface contrast.
-- **Buttons:** Solid #9B3721 fill with #FAF8F5 bold uppercase label, 2px solid #9B3721, 4px 4px 0px #14110F; shift -2px/-2px on hover.
-- **Cards:** Use #262320 surface with 2px solid #9B3721, radius 6px, and 4px 4px 0px #14110F.
-- **Navigation:** Sticky top bar on #31292A with bottom 2px solid #9B3721, high-contrast brand mark on left and single bold CTA on right.
+- **Buttons:** Solid #9B3821 fill with #FAF8F5 bold uppercase label, 2px solid #9B3821, 4px 4px 0px #14110F; shift -2px/-2px on hover.
+- **Cards:** Use #262320 surface with 2px solid #9B3821, radius 6px, and 4px 4px 0px #14110F.
+- **Navigation:** Sticky top bar on #32292A with bottom 2px solid #9B3821, high-contrast brand mark on left and single bold CTA on right.
 - **Hero Section:** Split or full-bleed showcase pairing display font (Fraunces) with high-res reference imagery and stamp badge.
-- **Badges:** Pill (9999px) or sharp stamp tags in #5785C6 with #141210 monospace text (Space Mono).
+- **Badges:** Pill (9999px) or sharp stamp tags in #5784C5 with #141210 monospace text (Space Mono).
 
 ## Step 3: Generate Cohesive Visual Assets
 When invoking an image generator (Midjourney, Flux, Imagen / Nano Banana), always wrap subject prompts with:
 - **Prefix:** `Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture`
-- **Suffix:** `anchored in #31292A earth, #9B3721 burnt terracotta, and #5785C6 cobalt slate, tactile sandstone grain, natural warm studio lighting`
+- **Suffix:** `anchored in #32292A earth, #9B3821 burnt terracotta, and #5784C5 cobalt slate, tactile sandstone grain, natural warm studio lighting`
 - **Negative Prompt:** `modern corporate SaaS UI, glossy plastic 3D render, cyberpunk neon, sterile white background, generic stock clipart`
 - **Style Reference Images (`--sref`):** Use `contact_sheet.jpg` or `references/pin_01.jpg`.
 
 ## Step 4: Final Visual Audit
 Before completing any UI task, verify:
-1. Contrast matches WCAG AA (`#F6F2EA` on `#31292A`).
-2. Surface textures (`Raw mineral sandstone & unglazed clay texture (grain score 28.49); Hand-painted terracotta (#9B3721) and cobalt (#5785C6) block-print motifs; Linocut / screenprint edge irregularity and stamped badges`) are represented.
+1. Contrast matches WCAG AA (`#F6F2EA` on `#32292A`).
+2. Surface textures (`Raw mineral sandstone & unglazed clay texture (grain score 28.49); Hand-painted terracotta (#9B3821) and cobalt (#5784C5) block-print motifs; Linocut / screenprint edge irregularity and stamped badges`) are represented.
 3. None of the forbidden patterns appear (`Do NOT use glossy corporate SaaS gradients, neon purple/cyan, or glassmorphism; Do NOT use sterile pure #FFFFFF backgrounds — always use warm sandstone/adobe cream or deep earth charcoal; Do NOT use generic stock-photo icons; use bold folk-art silhouettes and stamp borders`).

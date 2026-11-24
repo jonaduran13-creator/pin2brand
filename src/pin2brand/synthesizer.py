@@ -846,46 +846,48 @@ def _synthesize_with_gemini(
     model_name: str,
     api_key: str,
 ) -> VisualIdentityManifest:
-    """Invoke Gemini Vision with contact_sheet + 6 diverse images and strict Pydantic schema."""
-    from google import genai
-    from google.genai import types
-
-    client = genai.Client(api_key=api_key)
-    contents: list[object] = []
+    """Invoke Gemini Vision REST API directly via httpx (zero google-genai/cryptography bloat)."""
+    parts: list[dict[str, object]] = []
 
     cs_path = Path(report.contact_sheet_path)
     if cs_path.exists():
-        contents.append(
-            types.Part.from_bytes(data=cs_path.read_bytes(), mime_type="image/jpeg")
-        )
+        cs_b64 = base64.b64encode(cs_path.read_bytes()).decode("ascii")
+        parts.append({"inline_data": {"mime_type": "image/jpeg", "data": cs_b64}})
 
     sample_indices = set(_select_diverse_sample_indices(report, limit=6))
     for pin in board.pins:
         if pin.index in sample_indices and pin.local_path and Path(pin.local_path).exists():
-            contents.append(
-                types.Part.from_bytes(
-                    data=Path(pin.local_path).read_bytes(), mime_type="image/jpeg"
-                )
-            )
+            pin_b64 = base64.b64encode(Path(pin.local_path).read_bytes()).decode("ascii")
+            parts.append({"inline_data": {"mime_type": "image/jpeg", "data": pin_b64}})
 
-    contents.append(_build_llm_user_prompt(board, report))
-
-    response = client.models.generate_content(
-        model=model_name,
-        contents=contents,
-        config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
-            response_mime_type="application/json",
-            response_schema=VisualIdentityManifest,
-            temperature=0.35,
-        ),
+    schema_json = json.dumps(VisualIdentityManifest.model_json_schema(), indent=2)
+    prompt_text = (
+        f"{_build_llm_user_prompt(board, report)}\n\n"
+        f"Return ONLY valid JSON conforming strictly to this JSON Schema:\n{schema_json}"
     )
+    parts.append({"text": prompt_text})
 
-    if response.parsed is not None and isinstance(response.parsed, VisualIdentityManifest):
-        manifest = response.parsed
-    else:
-        manifest = VisualIdentityManifest.model_validate_json(response.text)
-
+    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
+    resp = httpx.post(
+        endpoint,
+        headers={
+            "x-goog-api-key": api_key,
+            "Content-Type": "application/json",
+        },
+        json={
+            "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+            "contents": [{"role": "user", "parts": parts}],
+            "generationConfig": {
+                "responseMimeType": "application/json",
+                "temperature": 0.35,
+            },
+        },
+        timeout=60.0,
+    )
+    resp.raise_for_status()
+    candidates = resp.json().get("candidates") or []
+    raw_text = candidates[0]["content"]["parts"][0]["text"]
+    manifest = VisualIdentityManifest.model_validate_json(raw_text)
     return _reconcile_manifest_pins(manifest, board, report)
 
 

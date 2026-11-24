@@ -143,23 +143,27 @@ def export_brand_kit(
 
     # 3. AGENTS.md (Compact root directive & pre-commit checklist for coding agents)
     agents_tpl = env.get_template("AGENTS.md.j2")
+    agents_md_content = agents_tpl.render(manifest=manifest)
     agents_md_path = output_dir / "AGENTS.md"
-    agents_md_path.write_text(agents_tpl.render(manifest=manifest), encoding="utf-8")
+    agents_md_path.write_text(agents_md_content, encoding="utf-8")
 
     # 4. cursor-visual-identity.mdc (Cursor IDE rule with concrete JSX/TSX blueprints)
     cursor_tpl = env.get_template("cursor_rules.mdc.j2")
+    cursor_mdc_content = cursor_tpl.render(manifest=manifest)
     cursor_mdc_path = output_dir / "cursor-visual-identity.mdc"
-    cursor_mdc_path.write_text(cursor_tpl.render(manifest=manifest), encoding="utf-8")
+    cursor_mdc_path.write_text(cursor_mdc_content, encoding="utf-8")
 
     # 5. SKILL.md (4-step executable agent skill workflow)
     slug = re.sub(r"[^a-z0-9-]+", "-", manifest.project_name.lower()).strip("-") or "brand"
     skill_tpl = env.get_template("SKILL.md.j2")
+    skill_md_content = skill_tpl.render(manifest=manifest, slug=slug)
     skill_md_path = output_dir / "SKILL.md"
-    skill_md_path.write_text(skill_tpl.render(manifest=manifest, slug=slug), encoding="utf-8")
+    skill_md_path.write_text(skill_md_content, encoding="utf-8")
 
     # 6. tokens.w3c.json (W3C Design Tokens for Figma & Style Dictionary)
+    w3c_json_str = json.dumps(_build_w3c_design_tokens(manifest), indent=2)
     w3c_path = output_dir / "tokens.w3c.json"
-    w3c_path.write_text(json.dumps(_build_w3c_design_tokens(manifest), indent=2), encoding="utf-8")
+    w3c_path.write_text(w3c_json_str, encoding="utf-8")
 
     # 7. tokens.css & tailwind.theme.json
     css_tpl = env.get_template("tokens.css.j2")
@@ -204,8 +208,9 @@ def export_brand_kit(
             "brand": manifest.frontend_ui_rules.shadow_style,
         },
     }
+    tailwind_json_str = json.dumps(tailwind_theme, indent=2)
     tailwind_path = output_dir / "tailwind.theme.json"
-    tailwind_path.write_text(json.dumps(tailwind_theme, indent=2), encoding="utf-8")
+    tailwind_path.write_text(tailwind_json_str, encoding="utf-8")
 
     # 8. generative-prompts.json
     gen_prompts_payload = {
@@ -244,8 +249,9 @@ def export_brand_kit(
         ],
         "contact_sheet_path": "contact_sheet.jpg" if contact_sheet_path else "",
     }
+    prompts_json_str = json.dumps(gen_prompts_payload, indent=2)
     prompts_path = output_dir / "generative-prompts.json"
-    prompts_path.write_text(json.dumps(gen_prompts_payload, indent=2), encoding="utf-8")
+    prompts_path.write_text(prompts_json_str, encoding="utf-8")
 
     # 9. brand-preview.html
     color_tokens = [
@@ -259,6 +265,18 @@ def export_brand_kit(
         ("Warning", "--brand-semantic-warning", "semantic_warning", manifest.color_system.semantic_warning),
         ("Success", "--brand-semantic-success", "semantic_success", manifest.color_system.semantic_success),
     ]
+    payload_versions = {
+        "visual-identity.json": manifest_json_str,
+        "AGENTS.md": agents_md_content,
+        "cursor-visual-identity.mdc": cursor_mdc_content,
+        "SKILL.md": skill_md_content,
+        "DESIGN_SYSTEM.md": design_md_content,
+        "tokens.w3c.json": w3c_json_str,
+        "tokens.css": tokens_css,
+        "tailwind.theme.json": tailwind_json_str,
+        "generative-prompts.json": prompts_json_str,
+    }
+    safe_payload_versions_json = json.dumps(payload_versions).replace("</", "<\\/")
     preview_tpl = html_env.get_template("brand_preview.html.j2")
     preview_path = output_dir / "brand-preview.html"
     safe_manifest_json = manifest_json_str.replace("</", "<\\/")
@@ -266,6 +284,7 @@ def export_brand_kit(
         preview_tpl.render(
             manifest=manifest,
             manifest_json=safe_manifest_json,
+            payload_versions_json=safe_payload_versions_json,
             tokens_css=tokens_css,
             color_tokens=color_tokens,
         ),

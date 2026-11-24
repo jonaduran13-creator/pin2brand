@@ -167,6 +167,10 @@ def test_end_to_end_local_folder_w3c_dtcg_and_templates(tmp_path: Path) -> None:
     assert delta_e_ciede2000(hex_to_rgb(cs.text_primary.hex), hex_to_rgb(cs.text_secondary.hex)) >= 10.0
     assert delta_e_ciede2000(hex_to_rgb(cs.accent_primary.hex), hex_to_rgb(cs.accent_secondary.hex)) >= 14.0
 
+    html_raw = artifacts["brand_preview_html"].read_text(encoding="utf-8")
+    assert "hydratePinCanvasesFromContactSheet" in html_raw
+    assert "payloadVersions" in html_raw
+
 
 def test_mcp_security_boundaries() -> None:
     """Ensure MCP server blocks arbitrary local directory scanning and path traversal."""

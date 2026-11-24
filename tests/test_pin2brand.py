@@ -165,6 +165,7 @@ def test_end_to_end_local_folder_w3c_dtcg_and_templates(tmp_path: Path) -> None:
         assert wcag_contrast_ratio(hex_to_rgb(tok.hex), hex_to_rgb(tok.contrast_text_hex)) >= 4.5
 
     assert delta_e_ciede2000(hex_to_rgb(cs.text_primary.hex), hex_to_rgb(cs.text_secondary.hex)) >= 10.0
+    assert delta_e_ciede2000(hex_to_rgb(cs.accent_primary.hex), hex_to_rgb(cs.accent_secondary.hex)) >= 14.0
 
 
 def test_mcp_security_boundaries() -> None:

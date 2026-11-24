@@ -361,10 +361,19 @@ def _synthesize_heuristic(
         if accent_candidates
         else _pick_cluster(clusters, lambda c: c.saturation > 0.2, 0)
     )
+    distinct_accents = [
+        c
+        for c in accent_candidates[1:]
+        if delta_e_ciede2000(accent_1.rgb, c.rgb) >= 18.0
+    ]
     accent_2 = (
-        accent_candidates[1]
-        if len(accent_candidates) > 1
-        else _pick_cluster(clusters, lambda c: c.hex != accent_1.hex, 1)
+        distinct_accents[0]
+        if distinct_accents
+        else _pick_cluster(
+            clusters,
+            lambda c: delta_e_ciede2000(accent_1.rgb, c.rgb) >= 18.0,
+            1,
+        )
     )
 
     blob = " ".join([board.board_title] + [p.title + " " + p.description for p in board.pins]).lower()

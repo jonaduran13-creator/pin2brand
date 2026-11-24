@@ -52,7 +52,7 @@
           "$description": "Primary CTAs, key brand marks, and focal highlights"
         },
         "secondary": {
-          "$value": "#C63E30",
+          "$value": "#5785C6",
           "$type": "color",
           "$description": "Badges, secondary tags, stickers, and hover states"
         }

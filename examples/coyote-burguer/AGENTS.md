@@ -11,7 +11,7 @@
 - **Ink & Accents:**
   - Text Primary: `#F6F2EA` | Text Secondary: `#C4B6A6`
   - Primary CTA Accent: `#9B3721` (ink: `#FAF8F5`)
-  - Supporting Badge Accent: `#C63E30` (ink: `#FAF8F5`)
+  - Supporting Badge Accent: `#5785C6` (ink: `#141210`)
 - **Typography:**
   - Display: `'Fraunces'` (`800`, `uppercase`, tracking `-0.02em`)
   - Section: `'Bebas Neue'` (`400`, `uppercase`)

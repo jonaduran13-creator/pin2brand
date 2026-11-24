@@ -19,7 +19,7 @@
     "hero_photography": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, signature hero shot on raw sandstone & handcrafted ceramic tableware, warm directional lighting, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
     "brand_mascot_illustration": "Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture, folk-art mascot illustration, bold block-print terracotta and cobalt linework, distressed ink stamp feel, anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting",
     "seamless_background_texture": "Seamless tileable surface texture, raw adobe sandstone and unglazed terracotta clay grain in #342A2A and #B13B29, macro top-down",
-    "ui_icon_sticker": "Hand-stamped woodblock badge icon, thick #C4B5A6 ink outline, #B13B29 terracotta and #6896D8 cobalt spot colors, isolated"
+    "ui_icon_sticker": "Hand-stamped woodblock badge icon, thick #F6F2EA ink outline, #B13B29 terracotta and #6896D8 cobalt spot colors, isolated"
   },
   "style_reference_images": [
     {
@@ -29,7 +29,7 @@
       "dominant_hex_colors": [
         "#C39A70",
         "#D1B9A0",
-        "#9B744F"
+        "#BDA284"
       ],
       "visual_tags": [
         "folk-coyote-motif",
@@ -43,14 +43,14 @@
       "local_path": "references/pin_02.jpg",
       "dominant_hex_colors": [
         "#7F8F97",
-        "#697F8A",
-        "#C63E30"
+        "#C63E30",
+        "#B9B4B0"
       ],
       "visual_tags": [
         "folk-coyote-motif",
         "desert-starlight-symbolism",
         "bold-flat-illustration",
-        "cobalt-blue"
+        "terracotta-red"
       ]
     },
     {
@@ -59,8 +59,8 @@
       "local_path": "references/pin_03.jpg",
       "dominant_hex_colors": [
         "#A29689",
-        "#B1AA9F",
-        "#918172"
+        "#7E6C5A",
+        "#C5C1BB"
       ],
       "visual_tags": [
         "raw-mineral-stone-texture",
@@ -87,12 +87,13 @@
       "local_path": "references/pin_05.jpg",
       "dominant_hex_colors": [
         "#656656",
-        "#757668",
-        "#525442"
+        "#9A361F",
+        "#89442F"
       ],
       "visual_tags": [
         "folk-coyote-motif",
-        "bold-flat-illustration"
+        "bold-flat-illustration",
+        "terracotta-red"
       ]
     }
   ],

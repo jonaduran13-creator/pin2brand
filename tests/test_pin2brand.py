@@ -15,6 +15,7 @@ from pin2brand.vision_math import (
     _kmeans_plusplus_numpy,
     _lab_to_rgb,
     _rgb_to_lab,
+    delta_e_cie76,
     hex_to_rgb,
     rgb_to_hex,
     wcag_contrast_ratio,
@@ -124,5 +125,27 @@ def test_end_to_end_local_folder_portable_paths_and_distinct_templates(tmp_path:
 
     assert len({design_md, agents_md, cursor_mdc, skill_md}) == 4
     assert "Pre-Commit UI Verification Checklist" in agents_md
-    assert "JSX / Tailwind Component Blueprints" in cursor_mdc
+    assert "Token-Driven JSX / Tailwind Component Blueprints" in cursor_mdc
+    assert "var(--brand-accent-primary)" in cursor_mdc
     assert "Skill Workflow:" in skill_md
+
+    # Verify WCAG AA (>= 4.5:1) on all 9 color tokens AND text_primary vs text_secondary Delta-E >= 12
+    cs = result["manifest"].color_system
+    all_tokens = [
+        cs.background_primary,
+        cs.background_secondary,
+        cs.surface_card,
+        cs.text_primary,
+        cs.text_secondary,
+        cs.accent_primary,
+        cs.accent_secondary,
+        cs.semantic_warning,
+        cs.semantic_success,
+    ]
+    for tok in all_tokens:
+        assert wcag_contrast_ratio(hex_to_rgb(tok.hex), hex_to_rgb(tok.contrast_text_hex)) >= 4.5
+
+    assert delta_e_cie76(hex_to_rgb(cs.text_primary.hex), hex_to_rgb(cs.text_secondary.hex)) >= 12.0
+
+    html_raw = artifacts["brand_preview_html"].read_text(encoding="utf-8")
+    assert "this.src='contact_sheet.jpg'" in html_raw

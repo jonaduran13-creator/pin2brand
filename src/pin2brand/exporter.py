@@ -87,6 +87,7 @@ def export_brand_kit(
     """Export all Pin2Brand multi-agent artifacts into `output_dir` and return their paths."""
     output_dir.mkdir(parents=True, exist_ok=True)
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=False)
+    html_env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
 
     # 1. visual-identity.json
     json_path = output_dir / "visual-identity.json"
@@ -217,12 +218,13 @@ def export_brand_kit(
         ("Warning", "--brand-semantic-warning", "semantic_warning", manifest.color_system.semantic_warning),
         ("Success", "--brand-semantic-success", "semantic_success", manifest.color_system.semantic_success),
     ]
-    preview_tpl = env.get_template("brand_preview.html.j2")
+    preview_tpl = html_env.get_template("brand_preview.html.j2")
     preview_path = output_dir / "brand-preview.html"
+    safe_manifest_json = manifest_json_str.replace("</", "<\\/")
     preview_path.write_text(
         preview_tpl.render(
             manifest=manifest,
-            manifest_json=manifest_json_str,
+            manifest_json=safe_manifest_json,
             tokens_css=tokens_css,
             color_tokens=color_tokens,
         ),

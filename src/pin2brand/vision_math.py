@@ -91,13 +91,16 @@ def _kmeans_plusplus_numpy(
     best_inertia = float("inf")
     best_centers = np.zeros((k, n_features), dtype=np.float64)
     best_labels = np.zeros(n_samples, dtype=np.int64)
+    data_norm_sq = np.sum(data**2, axis=1)
 
     for _ in range(n_init):
         # K-Means++ initialization
         centers = np.empty((k, n_features), dtype=np.float64)
         first_idx = int(rng.integers(0, n_samples))
         centers[0] = data[first_idx]
-        closest_dist_sq = np.sum((data - centers[0]) ** 2, axis=1)
+        closest_dist_sq = np.maximum(
+            0.0, data_norm_sq + float(np.sum(centers[0] ** 2)) - 2.0 * (data @ centers[0])
+        )
 
         for c_id in range(1, k):
             total_d = float(np.sum(closest_dist_sq))
@@ -107,14 +110,18 @@ def _kmeans_plusplus_numpy(
                 probs = closest_dist_sq / total_d
                 idx = int(rng.choice(n_samples, p=probs))
             centers[c_id] = data[idx]
-            new_dist_sq = np.sum((data - centers[c_id]) ** 2, axis=1)
+            new_dist_sq = np.maximum(
+                0.0, data_norm_sq + float(np.sum(centers[c_id] ** 2)) - 2.0 * (data @ centers[c_id])
+            )
             closest_dist_sq = np.minimum(closest_dist_sq, new_dist_sq)
 
-        # Lloyd's iterations
+        # Lloyd's iterations using BLAS matrix product ||x - c||^2 = ||x||^2 + ||c||^2 - 2 x.c^T
         labels = np.zeros(n_samples, dtype=np.int64)
         for _it in range(max_iter):
-            # Compute squared distances (N, k)
-            dists_sq = np.sum((data[:, None, :] - centers[None, :, :]) ** 2, axis=2)
+            centers_norm_sq = np.sum(centers**2, axis=1)
+            dists_sq = np.maximum(
+                0.0, data_norm_sq[:, None] + centers_norm_sq[None, :] - 2.0 * (data @ centers.T)
+            )
             new_labels = np.argmin(dists_sq, axis=1)
             if np.array_equal(new_labels, labels) and _it > 0:
                 break
@@ -266,17 +273,22 @@ def _extract_k_colors_lab(
     return ranked
 
 
+def delta_e_cie76(rgb1: tuple[int, int, int], rgb2: tuple[int, int, int]) -> float:
+    """Compute perceptual CIE76 Delta-E distance in CIELAB space between two RGB colors."""
+    pair = np.array([rgb1, rgb2], dtype=np.uint8)
+    lab = _rgb_to_lab(pair)
+    return float(np.linalg.norm(lab[0] - lab[1]))
+
+
 def _deduplicate_clusters(
-    clusters: list[ExtractedColorCluster], min_delta_rgb: float = 26.0
+    clusters: list[ExtractedColorCluster], min_delta_e: float = 8.5
 ) -> list[ExtractedColorCluster]:
-    """Merge visually near-identical clusters while preserving total percentage order."""
+    """Merge perceptually near-identical clusters using CIELAB Delta-E distance."""
     kept: list[ExtractedColorCluster] = []
     for c in clusters:
-        c_vec = np.array(c.rgb, dtype=np.float64)
         merged = False
         for existing in kept:
-            e_vec = np.array(existing.rgb, dtype=np.float64)
-            if float(np.linalg.norm(c_vec - e_vec)) < min_delta_rgb:
+            if delta_e_cie76(c.rgb, existing.rgb) < min_delta_e:
                 existing.percentage = round(existing.percentage + c.percentage, 2)
                 merged = True
                 break
@@ -440,11 +452,10 @@ def analyze_board_visuals(
 
         ranked = _extract_k_colors_lab(pixels, n_clusters=6)
         distinct_hexes: list[str] = []
-        distinct_vecs: list[np.ndarray] = []
+        distinct_rgbs: list[tuple[int, int, int]] = []
         for rgb, _pct in ranked:
-            vec = np.array(rgb, dtype=np.float64)
-            if all(float(np.linalg.norm(vec - v)) >= 26.0 for v in distinct_vecs):
-                distinct_vecs.append(vec)
+            if all(delta_e_cie76(rgb, prev_rgb) >= 8.5 for prev_rgb in distinct_rgbs):
+                distinct_rgbs.append(rgb)
                 distinct_hexes.append(rgb_to_hex(rgb))
             if len(distinct_hexes) >= 3:
                 break
@@ -464,7 +475,7 @@ def analyze_board_visuals(
     all_samples = np.vstack(global_pixel_samples)
     global_ranked = _extract_k_colors_lab(all_samples, n_clusters=12)
     raw_clusters = [_classify_color(rgb, pct) for rgb, pct in global_ranked]
-    global_clusters = _deduplicate_clusters(raw_clusters, min_delta_rgb=26.0)
+    global_clusters = _deduplicate_clusters(raw_clusters, min_delta_e=8.5)
     global_clusters.sort(key=lambda c: c.percentage, reverse=True)
 
     generate_contact_sheet(

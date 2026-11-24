@@ -35,12 +35,12 @@
       },
       "text": {
         "primary": {
-          "$value": "#C4B5A6",
+          "$value": "#F6F2EA",
           "$type": "color",
           "$description": "Headings, body copy, and crisp borders"
         },
         "secondary": {
-          "$value": "#C4BBB0",
+          "$value": "#C4B5A6",
           "$type": "color",
           "$description": "Captions, metadata, and subdued labels"
         }

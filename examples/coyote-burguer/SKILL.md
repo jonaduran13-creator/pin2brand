@@ -30,6 +30,6 @@ When invoking an image generator (Midjourney, Flux, Imagen / Nano Banana), alway
 
 ## Step 4: Final Visual Audit
 Before completing any UI task, verify:
-1. Contrast matches WCAG AA (`#C4B5A6` on `#342A2A`).
+1. Contrast matches WCAG AA (`#F6F2EA` on `#342A2A`).
 2. Surface textures (`Raw mineral sandstone & unglazed clay texture (grain score 28.49); Hand-painted terracotta (#B13B29) and cobalt (#6896D8) block-print motifs; Linocut / screenprint edge irregularity and stamped badges`) are represented.
 3. None of the forbidden patterns appear (`Do NOT use glossy corporate SaaS gradients, neon purple/cyan, or glassmorphism; Do NOT use sterile pure #FFFFFF backgrounds — always use warm sandstone/adobe cream or deep earth charcoal; Do NOT use generic stock-photo icons; use bold folk-art silhouettes and stamp borders`).

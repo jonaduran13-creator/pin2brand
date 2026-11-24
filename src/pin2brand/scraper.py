@@ -317,7 +317,7 @@ async def _scrape_via_pidgets_api(
     if not raw_pins:
         return board_title, []
 
-    pins: list[ScrapedPin] = []
+    raw_entries: list[dict[str, str]] = []
     seen_ids: set[str] = set()
     for item in raw_pins:
         if not isinstance(item, dict):
@@ -331,20 +331,34 @@ async def _scrape_via_pidgets_api(
             continue
         seen_ids.add(pin_id)
         desc = str(item.get("description") or "").strip()
-        best_url = _upgrade_candidates(str(img_obj["url"]))[0]
-        pins.append(
-            ScrapedPin(
-                pin_id=pin_id,
-                index=len(pins) + 1,
-                title=desc[:80] or f"Reference Pin {len(pins) + 1}",
-                description=desc[:300],
-                pin_url=f"https://www.pinterest.com/pin/{pin_id}/",
-                image_url=best_url,
-            )
+        raw_entries.append(
+            {
+                "pin_id": pin_id,
+                "desc": desc,
+                "raw_url": str(img_obj["url"]),
+            }
         )
-        if len(pins) >= max_pins:
+        if len(raw_entries) >= max_pins:
             break
-    return board_title, pins
+
+    sem = asyncio.Semaphore(8)
+
+    async def build_pidget_pin(idx: int, entry: dict[str, str]) -> ScrapedPin:
+        async with sem:
+            best_url = await _resolve_best_image_url(client, entry["raw_url"])
+        return ScrapedPin(
+            pin_id=entry["pin_id"],
+            index=idx,
+            title=entry["desc"][:80] or f"Reference Pin {idx}",
+            description=entry["desc"][:300],
+            pin_url=f"https://www.pinterest.com/pin/{entry['pin_id']}/",
+            image_url=best_url,
+        )
+
+    pins = await asyncio.gather(
+        *(build_pidget_pin(i + 1, item) for i, item in enumerate(raw_entries))
+    )
+    return board_title, list(pins)
 
 
 async def _scrape_via_rss(

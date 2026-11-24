@@ -5,11 +5,11 @@
 ## 1. Mandatory Tokens
 - **Archetype:** `Artisanal Desert Folk & Handcrafted Street-Food Identity`
 - **Canvas & Surfaces:**
-  - Primary BG: `#342A2A` (ink: `#C4B5A6`)
-  - Contrast Band BG: `#C4B5A6` (ink: `#1A1714`)
-  - Card Surface: `#262320` (ink: `#C4B5A6`)
+  - Primary BG: `#342A2A` (ink: `#F6F2EA`)
+  - Contrast Band BG: `#C4B5A6` (ink: `#141210`)
+  - Card Surface: `#262320` (ink: `#F6F2EA`)
 - **Ink & Accents:**
-  - Text Primary: `#C4B5A6` | Text Secondary: `#C4BBB0`
+  - Text Primary: `#F6F2EA` | Text Secondary: `#C4B5A6`
   - Primary CTA Accent: `#B13B29` (ink: `#FAF8F5`)
   - Supporting Badge Accent: `#6896D8` (ink: `#141210`)
 - **Typography:**

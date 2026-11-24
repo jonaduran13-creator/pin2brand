@@ -23,11 +23,11 @@
 
 | Semantic Role | HEX | CSS Variable | Suggested Tailwind Utility | Recommended Contrast Ink | Usage / Role |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Background Primary** | `#342A2A` | `--brand-bg-primary` | `bg-[#342A2A]` | `#C4B5A6` | Main page background and negative space |
-| **Background Secondary** | `#C4B5A6` | `--brand-bg-secondary` | `bg-[#C4B5A6]` | `#1A1714` | High-contrast dark/inverted bands, footers, and feature callouts |
-| **Surface Card** | `#262320` | `--brand-surface-card` | `bg-[#262320]` | `#C4B5A6` | Cards, menu tiles, and interactive containers |
-| **Text Primary** | `#C4B5A6` | `--brand-text-primary` | `text-[#C4B5A6]` | `#342A2A` | Headings, body copy, and crisp borders |
-| **Text Secondary** | `#C4BBB0` | `--brand-text-secondary` | `text-[#C4BBB0]` | `#342A2A` | Captions, metadata, and subdued labels |
+| **Background Primary** | `#342A2A` | `--brand-bg-primary` | `bg-[#342A2A]` | `#F6F2EA` | Main page background and negative space |
+| **Background Secondary** | `#C4B5A6` | `--brand-bg-secondary` | `bg-[#C4B5A6]` | `#141210` | High-contrast dark/inverted bands, footers, and feature callouts |
+| **Surface Card** | `#262320` | `--brand-surface-card` | `bg-[#262320]` | `#F6F2EA` | Cards, menu tiles, and interactive containers |
+| **Text Primary** | `#F6F2EA` | `--brand-text-primary` | `text-[#F6F2EA]` | `#342A2A` | Headings, body copy, and crisp borders |
+| **Text Secondary** | `#C4B5A6` | `--brand-text-secondary` | `text-[#C4B5A6]` | `#342A2A` | Captions, metadata, and subdued labels |
 | **Accent Primary** | `#B13B29` | `--brand-accent-primary` | `bg-[#B13B29]` | `#FAF8F5` | Primary CTAs, key brand marks, and focal highlights |
 | **Accent Secondary** | `#6896D8` | `--brand-accent-secondary` | `bg-[#6896D8]` | `#141210` | Badges, secondary tags, stickers, and hover states |
 

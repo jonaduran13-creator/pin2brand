@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="{{ manifest.typography.google_fonts_import_url }}" rel="stylesheet" />
   <style>
-{{ tokens_css }}
+{{ tokens_css | safe }}
 
     * { box-sizing: border-box; }
     body {
@@ -243,7 +243,7 @@
       </div>
       <div>
         {% if manifest.reference_pins %}
-        <img src="references/pin_01.jpg" alt="Lead Reference" style="width:100%; border-radius: var(--brand-radius-md); border: var(--brand-border); object-fit: cover; max-height: 360px;" />
+        <img src="references/pin_01.jpg" onerror="this.onerror=null; this.src='contact_sheet.jpg';" alt="Lead Reference" style="width:100%; border-radius: var(--brand-radius-md); border: var(--brand-border); object-fit: cover; max-height: 360px;" />
         {% endif %}
       </div>
     </section>
@@ -323,7 +323,7 @@
 
   <div class="toast" id="toast">Copied!</div>
   <script>
-    const manifestData = {{ manifest_json }};
+    const manifestData = {{ manifest_json | safe }};
     let isGenericMode = false;
 
     function showToast(msg) {

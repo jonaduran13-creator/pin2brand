@@ -30,7 +30,7 @@ from .models import (
     TypographySystem,
     VisualIdentityManifest,
 )
-from .vision_math import hex_to_rgb, wcag_contrast_ratio
+from .vision_math import delta_e_cie76, hex_to_rgb, wcag_contrast_ratio
 
 SYSTEM_PROMPT = """You are a Staff Design Systems Architect and Creative Director.
 You are given:
@@ -105,14 +105,20 @@ def _build_google_fonts_url(families: list[str]) -> str:
 
 
 def _ensure_contrast_pair(fg_hex: str, bg_hex: str, prefer_dark: bool = True) -> str:
-    """Guarantee at least 4.5:1 WCAG contrast for foreground text against background."""
+    """Guarantee at least 4.5:1 WCAG AA contrast for foreground text against background."""
     fg_rgb = hex_to_rgb(fg_hex)
     bg_rgb = hex_to_rgb(bg_hex)
     if wcag_contrast_ratio(fg_rgb, bg_rgb) >= 4.5:
         return fg_hex
-    fallback = "#1A1714" if prefer_dark else "#FAF7F2"
-    if wcag_contrast_ratio(hex_to_rgb(fallback), bg_rgb) >= 4.5:
-        return fallback
+
+    candidates = (
+        ["#141210", "#FAF8F5", "#000000", "#FFFFFF"]
+        if prefer_dark
+        else ["#FAF8F5", "#141210", "#FFFFFF", "#000000"]
+    )
+    for cand in candidates:
+        if wcag_contrast_ratio(hex_to_rgb(cand), bg_rgb) >= 4.5:
+            return cand
     return (
         "#000000"
         if wcag_contrast_ratio((0, 0, 0), bg_rgb) >= wcag_contrast_ratio((255, 255, 255), bg_rgb)
@@ -120,17 +126,83 @@ def _ensure_contrast_pair(fg_hex: str, bg_hex: str, prefer_dark: bool = True) ->
     )
 
 
+def _derive_distinct_text_hierarchy(
+    bg_hex: str,
+    candidate_light_hex: str | None,
+    candidate_dark_hex: str | None,
+    is_dark_dominant: bool,
+) -> tuple[str, str]:
+    """Return (text_primary_hex, text_secondary_hex) guaranteeing WCAG AA >= 4.5:1 on bg_hex AND Delta-E >= 14 between them."""
+    if is_dark_dominant:
+        # High-luminance primary ink on dark canvas
+        pri_candidates = ["#F6F2EA", "#FAF8F5", "#FFFFFF"]
+        if candidate_light_hex and wcag_contrast_ratio(hex_to_rgb(candidate_light_hex), hex_to_rgb(bg_hex)) >= 9.0:
+            pri_candidates.insert(0, candidate_light_hex)
+        text_pri = _ensure_contrast_pair(pri_candidates[0], bg_hex, prefer_dark=False)
+
+        sec_pool = [
+            *( [candidate_light_hex] if candidate_light_hex else [] ),
+            "#C4B5A6",
+            "#B8ADA0",
+            "#A89F91",
+            "#D6CFC7",
+        ]
+        for cand in sec_pool:
+            if (
+                wcag_contrast_ratio(hex_to_rgb(cand), hex_to_rgb(bg_hex)) >= 4.5
+                and delta_e_cie76(hex_to_rgb(text_pri), hex_to_rgb(cand)) >= 12.0
+            ):
+                return text_pri, cand
+        return text_pri, _ensure_contrast_pair("#B8ADA0", bg_hex, prefer_dark=False)
+    else:
+        pri_candidates = ["#1A1714", "#12100E", "#000000"]
+        if candidate_dark_hex and wcag_contrast_ratio(hex_to_rgb(candidate_dark_hex), hex_to_rgb(bg_hex)) >= 9.0:
+            pri_candidates.insert(0, candidate_dark_hex)
+        text_pri = _ensure_contrast_pair(pri_candidates[0], bg_hex, prefer_dark=True)
+
+        sec_pool = ["#57534E", "#4A4540", "#615B55", "#3F3A36"]
+        for cand in sec_pool:
+            if (
+                wcag_contrast_ratio(hex_to_rgb(cand), hex_to_rgb(bg_hex)) >= 4.5
+                and delta_e_cie76(hex_to_rgb(text_pri), hex_to_rgb(cand)) >= 12.0
+            ):
+                return text_pri, cand
+        return text_pri, _ensure_contrast_pair("#57534E", bg_hex, prefer_dark=True)
+
+
+def _enforce_wcag_on_color_system(cs: ColorSystem) -> ColorSystem:
+    """Audit and enforce WCAG AA (>= 4.5:1) on every ColorToken in ColorSystem."""
+    tokens = [
+        cs.background_primary,
+        cs.background_secondary,
+        cs.surface_card,
+        cs.text_primary,
+        cs.text_secondary,
+        cs.accent_primary,
+        cs.accent_secondary,
+        cs.semantic_warning,
+        cs.semantic_success,
+    ]
+    for tok in tokens:
+        tok.contrast_text_hex = _ensure_contrast_pair(tok.contrast_text_hex, tok.hex, prefer_dark=True)
+    # Also ensure text_primary and text_secondary meet >= 4.5:1 against background_primary
+    cs.text_primary.hex = _ensure_contrast_pair(cs.text_primary.hex, cs.background_primary.hex)
+    cs.text_secondary.hex = _ensure_contrast_pair(cs.text_secondary.hex, cs.background_primary.hex)
+    return cs
+
+
 def _cluster_to_token(
     cluster: ExtractedColorCluster,
     name: str,
     role: str,
 ) -> ColorToken:
+    safe_contrast = _ensure_contrast_pair(cluster.best_contrast_text, cluster.hex, prefer_dark=True)
     return ColorToken(
         hex=cluster.hex,
         name=name,
         role=role,
         usage_percentage=cluster.percentage,
-        contrast_text_hex=cluster.best_contrast_text,
+        contrast_text_hex=safe_contrast,
     )
 
 
@@ -258,20 +330,19 @@ def _synthesize_heuristic(
         secondary_bg_hex = bg_light.hex if bg_light else "#F4EFE6"
         secondary_bg_pct = bg_light.percentage if bg_light else 15.0
         surface_hex = "#262320"
-        text_pri_hex = _ensure_contrast_pair(
-            bg_light.hex if bg_light else "#F6F2EA", primary_bg_hex, prefer_dark=False
-        )
-        text_sec_hex = "#C4BBB0"
     else:
         primary_bg_hex = bg_light.hex if bg_light else "#F5F0E6"
         primary_bg_pct = bg_light.percentage if bg_light else 35.0
         secondary_bg_hex = bg_dark.hex if bg_dark else "#1C1917"
         secondary_bg_pct = bg_dark.percentage if bg_dark else 20.0
         surface_hex = "#FAF6EE" if primary_bg_hex.upper() != "#FAF6EE" else "#FFFFFF"
-        text_pri_hex = _ensure_contrast_pair(
-            bg_dark.hex if bg_dark else "#1C1917", primary_bg_hex, prefer_dark=True
-        )
-        text_sec_hex = "#57534E"
+
+    text_pri_hex, text_sec_hex = _derive_distinct_text_hierarchy(
+        bg_hex=primary_bg_hex,
+        candidate_light_hex=bg_light.hex if bg_light else None,
+        candidate_dark_hex=bg_dark.hex if bg_dark else None,
+        is_dark_dominant=is_dark_dominant and bg_dark is not None,
+    )
 
     accent_1 = (
         accent_candidates[0]
@@ -588,14 +659,14 @@ def _synthesize_heuristic(
             name="Warm Amber Alert",
             role="Warnings and limited-time callouts",
             usage_percentage=1.0,
-            contrast_text_hex="#FFFFFF",
+            contrast_text_hex=_ensure_contrast_pair("#141210", "#D97706", prefer_dark=True),
         ),
         semantic_success=ColorToken(
             hex="#15803D",
             name="Verified Green",
             role="Confirmations and active status tags",
             usage_percentage=1.0,
-            contrast_text_hex="#FFFFFF",
+            contrast_text_hex=_ensure_contrast_pair("#FAF8F5", "#15803D", prefer_dark=False),
         ),
         color_harmony_notes=(
             f"Mathematically derived via CIELAB K-Means across {len(board.pins)} pins. "
@@ -607,6 +678,7 @@ def _synthesize_heuristic(
             "Unrelated neon cyan (#00FFFF) unless explicitly in accent tokens",
         ],
     )
+    color_system = _enforce_wcag_on_color_system(color_system)
 
     ui_rules = FrontendUIRules(
         aesthetic_archetype=archetype,
@@ -737,6 +809,7 @@ def _reconcile_manifest_pins(
         )
     manifest.reference_pins = reconciled_pins
     manifest.board_url = board.canonical_url
+    manifest.color_system = _enforce_wcag_on_color_system(manifest.color_system)
     return manifest
 
 

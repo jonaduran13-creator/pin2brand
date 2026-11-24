@@ -4,14 +4,14 @@
 :root {
   /* Color Tokens */
   --brand-bg-primary: #342A2A;
-  --brand-bg-primary-contrast: #C4B5A6;
+  --brand-bg-primary-contrast: #F6F2EA;
   --brand-bg-secondary: #C4B5A6;
-  --brand-bg-secondary-contrast: #1A1714;
+  --brand-bg-secondary-contrast: #141210;
   --brand-surface-card: #262320;
-  --brand-surface-card-contrast: #C4B5A6;
+  --brand-surface-card-contrast: #F6F2EA;
 
-  --brand-text-primary: #C4B5A6;
-  --brand-text-secondary: #C4BBB0;
+  --brand-text-primary: #F6F2EA;
+  --brand-text-secondary: #C4B5A6;
 
   --brand-accent-primary: #B13B29;
   --brand-accent-primary-contrast: #FAF8F5;

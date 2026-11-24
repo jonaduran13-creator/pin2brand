@@ -1,63 +1,55 @@
 ---
-description: JSX/TSX & CSS Component Patterns for COYOTE BURGUER (Artisanal Desert Folk & Handcrafted Street-Food Identity)
+description: Token-Driven JSX/TSX & Tailwind Component Patterns for COYOTE BURGUER (Artisanal Desert Folk & Handcrafted Street-Food Identity)
 globs: ["**/*.tsx", "**/*.jsx", "**/*.css", "**/*.scss", "**/*.html", "**/*.vue", "**/*.svelte"]
 alwaysApply: true
 ---
 
 # Cursor UI Component Patterns — COYOTE BURGUER
 
-When generating or editing UI components, apply these exact code patterns instead of generic Shadcn/Tailwind defaults.
+Always consume the semantic CSS variables from `tokens.css` (`var(--brand-*)`) or the Tailwind theme keys from `tailwind.theme.json` (`bg-brand-*`, `text-brand-*`, `font-display`, `shadow-brand`). **Never hardcode raw HEX literals or inline `style` objects in components.**
 
-## 1. JSX / Tailwind Component Blueprints
+## 1. Token-Driven JSX / Tailwind Component Blueprints
 
-### Primary CTA Button
+### Primary CTA Button (`--brand-accent-primary`)
 ```tsx
-<button
-  className="inline-flex items-center justify-center px-5 py-3 font-mono font-bold uppercase tracking-wider transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
-  style={{
-    backgroundColor: "#B13B29",
-    color: "#FAF8F5",
-    border: "2px solid #B13B29",
-    borderRadius: "6px",
-    boxShadow: "4px 4px 0px #14110F",
-  }}
->
-  {children}
-</button>
+export function BrandButton({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      className="inline-flex items-center justify-center px-5 py-3 font-mono font-bold uppercase tracking-wider bg-[var(--brand-accent-primary)] text-[var(--brand-accent-primary-contrast)] rounded-[var(--brand-radius-md)] [border:var(--brand-border)] [box-shadow:var(--brand-shadow)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 ```
 
-### Elevated Feature / Product Card
+### Elevated Feature / Product Card (`--brand-surface-card`)
 ```tsx
-<article
-  className="p-6"
-  style={{
-    backgroundColor: "#262320",
-    color: "#C4B5A6",
-    border: "2px solid #B13B29",
-    borderRadius: "10px",
-    boxShadow: "4px 4px 0px #14110F",
-  }}
->
-  {children}
-</article>
+export function BrandCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <article
+      className={`p-6 bg-[var(--brand-surface-card)] text-[var(--brand-surface-card-contrast)] rounded-[var(--brand-radius-lg)] [border:var(--brand-border)] [box-shadow:var(--brand-shadow)] ${className}`}
+    >
+      {children}
+    </article>
+  );
+}
 ```
 
-### Stamp / Pill Badge
+### Stamp / Pill Badge (`--brand-accent-secondary`)
 ```tsx
-<span
-  className="inline-flex items-center px-3 py-1 text-xs font-mono font-bold uppercase"
-  style={{
-    backgroundColor: "#6896D8",
-    color: "#141210",
-    border: "2px solid #B13B29",
-    borderRadius: "9999px",
-  }}
->
-  {label}
-</span>
+export function BrandBadge({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center px-3 py-1 text-xs font-mono font-bold uppercase bg-[var(--brand-accent-secondary)] text-[var(--brand-accent-secondary-contrast)] rounded-[var(--brand-radius-pill)] [border:var(--brand-border)]">
+      {label}
+    </span>
+  );
+}
 ```
 
 ## 2. Hard Anti-Patterns
+- NEVER hardcode raw HEX strings or inline `style={{ ... }}` objects when a `--brand-*` token exists.
 - Do NOT use glossy corporate SaaS gradients, neon purple/cyan, or glassmorphism
 - Do NOT use sterile pure #FFFFFF backgrounds — always use warm sandstone/adobe cream or deep earth charcoal
 - Do NOT use generic stock-photo icons; use bold folk-art silhouettes and stamp borders

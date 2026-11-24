@@ -222,8 +222,10 @@ def _classify_color(
     )
 
 
-def _sample_image_pixels_and_texture(image_path: Path, size: int = 150) -> tuple[np.ndarray, float]:
-    """Return ((size*size, 3) uint8 RGB array, normalized discrete Laplacian texture score)."""
+def _sample_image_pixels_and_texture(
+    image_path: Path, size: int = 150
+) -> tuple[np.ndarray, float, np.ndarray]:
+    """Return ((size*size, 3) uint8 RGB array, Laplacian texture score, center-saliency sampling probabilities)."""
     with Image.open(image_path) as img:
         rgb_img = img.convert("RGB").resize((size, size), Image.Resampling.LANCZOS)
         arr = np.asarray(rgb_img, dtype=np.uint8)
@@ -240,7 +242,14 @@ def _sample_image_pixels_and_texture(image_path: Path, size: int = 150) -> tuple
             - gray[1:-1, 2:]
         )
         texture_score = round(float(np.std(lap)), 2)
-        return arr.reshape(-1, 3), texture_score
+
+        # 2D Gaussian center-saliency mask (sigma = 0.36 * size) so central subject outweights outer background borders
+        coords = np.linspace(-1.0, 1.0, size, dtype=np.float64)
+        yy, xx = np.meshgrid(coords, coords, indexing="ij")
+        gaussian_center = np.exp(-((xx**2 + yy**2) / (2.0 * (0.52**2))))
+        weights = (0.35 + 0.65 * gaussian_center).reshape(-1)
+        probs = weights / float(np.sum(weights))
+        return arr.reshape(-1, 3), texture_score, probs
 
 
 def _extract_k_colors_lab(
@@ -280,15 +289,87 @@ def delta_e_cie76(rgb1: tuple[int, int, int], rgb2: tuple[int, int, int]) -> flo
     return float(np.linalg.norm(lab[0] - lab[1]))
 
 
+def delta_e_ciede2000(rgb1: tuple[int, int, int], rgb2: tuple[int, int, int]) -> float:
+    """Compute ISO/CIE 11664-6:2014 CIEDE2000 (Delta-E 00) perceptual distance between two RGB colors."""
+    pair = np.array([rgb1, rgb2], dtype=np.uint8)
+    lab = _rgb_to_lab(pair)
+    L1, a1, b1 = float(lab[0, 0]), float(lab[0, 1]), float(lab[0, 2])
+    L2, a2, b2 = float(lab[1, 0]), float(lab[1, 1]), float(lab[1, 2])
+
+    C1 = math.hypot(a1, b1)
+    C2 = math.hypot(a2, b2)
+    C_bar = 0.5 * (C1 + C2)
+    C_bar7 = C_bar**7
+    G = 0.5 * (1.0 - math.sqrt(C_bar7 / (C_bar7 + 25.0**7)))
+
+    a1_p = (1.0 + G) * a1
+    a2_p = (1.0 + G) * a2
+    C1_p = math.hypot(a1_p, b1)
+    C2_p = math.hypot(a2_p, b2)
+
+    h1_p = math.degrees(math.atan2(b1, a1_p)) % 360.0 if C1_p > 1e-9 else 0.0
+    h2_p = math.degrees(math.atan2(b2, a2_p)) % 360.0 if C2_p > 1e-9 else 0.0
+
+    dL_p = L2 - L1
+    dC_p = C2_p - C1_p
+
+    if C1_p * C2_p <= 1e-9:
+        dh_p = 0.0
+    else:
+        dh = h2_p - h1_p
+        if abs(dh) <= 180.0:
+            dh_p = dh
+        elif dh > 180.0:
+            dh_p = dh - 360.0
+        else:
+            dh_p = dh + 360.0
+
+    dH_p = 2.0 * math.sqrt(C1_p * C2_p) * math.sin(math.radians(0.5 * dh_p))
+
+    L_bar_p = 0.5 * (L1 + L2)
+    C_bar_p = 0.5 * (C1_p + C2_p)
+
+    if C1_p * C2_p <= 1e-9:
+        h_bar_p = h1_p + h2_p
+    else:
+        if abs(h1_p - h2_p) <= 180.0:
+            h_bar_p = 0.5 * (h1_p + h2_p)
+        elif (h1_p + h2_p) < 360.0:
+            h_bar_p = 0.5 * (h1_p + h2_p + 360.0)
+        else:
+            h_bar_p = 0.5 * (h1_p + h2_p - 360.0)
+
+    T = (
+        1.0
+        - 0.17 * math.cos(math.radians(h_bar_p - 30.0))
+        + 0.24 * math.cos(math.radians(2.0 * h_bar_p))
+        + 0.32 * math.cos(math.radians(3.0 * h_bar_p + 6.0))
+        - 0.20 * math.cos(math.radians(4.0 * h_bar_p - 63.0))
+    )
+
+    d_theta = 30.0 * math.exp(-(((h_bar_p - 275.0) / 25.0) ** 2))
+    C_bar_p7 = C_bar_p**7
+    R_C = 2.0 * math.sqrt(C_bar_p7 / (C_bar_p7 + 25.0**7))
+    S_L = 1.0 + (0.015 * ((L_bar_p - 50.0) ** 2)) / math.sqrt(20.0 + ((L_bar_p - 50.0) ** 2))
+    S_C = 1.0 + 0.045 * C_bar_p
+    S_H = 1.0 + 0.015 * C_bar_p * T
+    R_T = -math.sin(math.radians(2.0 * d_theta)) * R_C
+
+    term_L = dL_p / S_L
+    term_C = dC_p / S_C
+    term_H = dH_p / S_H
+    return float(math.sqrt(term_L**2 + term_C**2 + term_H**2 + R_T * term_C * term_H))
+
+
 def _deduplicate_clusters(
-    clusters: list[ExtractedColorCluster], min_delta_e: float = 8.5
+    clusters: list[ExtractedColorCluster], min_delta_e: float = 7.0
 ) -> list[ExtractedColorCluster]:
-    """Merge perceptually near-identical clusters using CIELAB Delta-E distance."""
+    """Merge perceptually near-identical clusters using CIEDE2000 (Delta-E 00) distance."""
     kept: list[ExtractedColorCluster] = []
     for c in clusters:
         merged = False
         for existing in kept:
-            if delta_e_cie76(c.rgb, existing.rgb) < min_delta_e:
+            if delta_e_ciede2000(c.rgb, existing.rgb) < min_delta_e:
                 existing.percentage = round(existing.percentage + c.percentage, 2)
                 merged = True
                 break
@@ -445,16 +526,21 @@ def analyze_board_visuals(
 
     rng = np.random.default_rng(42)
     for pin in valid_pins:
-        pixels, tex_score = _sample_image_pixels_and_texture(Path(pin.local_path), size=150)
+        pixels, tex_score, saliency_probs = _sample_image_pixels_and_texture(
+            Path(pin.local_path), size=150
+        )
         texture_scores.append(tex_score)
-        sample_idx = rng.choice(len(pixels), size=min(2000, len(pixels)), replace=False)
-        global_pixel_samples.append(pixels[sample_idx])
+        sample_idx = rng.choice(
+            len(pixels), size=min(2500, len(pixels)), replace=False, p=saliency_probs
+        )
+        sampled_pin_pixels = pixels[sample_idx]
+        global_pixel_samples.append(sampled_pin_pixels)
 
-        ranked = _extract_k_colors_lab(pixels, n_clusters=6)
+        ranked = _extract_k_colors_lab(sampled_pin_pixels, n_clusters=6)
         distinct_hexes: list[str] = []
         distinct_rgbs: list[tuple[int, int, int]] = []
         for rgb, _pct in ranked:
-            if all(delta_e_cie76(rgb, prev_rgb) >= 8.5 for prev_rgb in distinct_rgbs):
+            if all(delta_e_ciede2000(rgb, prev_rgb) >= 7.0 for prev_rgb in distinct_rgbs):
                 distinct_rgbs.append(rgb)
                 distinct_hexes.append(rgb_to_hex(rgb))
             if len(distinct_hexes) >= 3:
@@ -475,7 +561,7 @@ def analyze_board_visuals(
     all_samples = np.vstack(global_pixel_samples)
     global_ranked = _extract_k_colors_lab(all_samples, n_clusters=12)
     raw_clusters = [_classify_color(rgb, pct) for rgb, pct in global_ranked]
-    global_clusters = _deduplicate_clusters(raw_clusters, min_delta_e=8.5)
+    global_clusters = _deduplicate_clusters(raw_clusters, min_delta_e=7.0)
     global_clusters.sort(key=lambda c: c.percentage, reverse=True)
 
     generate_contact_sheet(

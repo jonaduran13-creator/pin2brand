@@ -18,12 +18,12 @@
     "color": {
       "background": {
         "primary": {
-          "$value": "#342A2A",
+          "$value": "#31292A",
           "$type": "color",
           "$description": "Main page background and negative space"
         },
         "secondary": {
-          "$value": "#C4B5A6",
+          "$value": "#C4B6A6",
           "$type": "color",
           "$description": "High-contrast dark/inverted bands, footers, and feature callouts"
         },
@@ -40,19 +40,19 @@
           "$description": "Headings, body copy, and crisp borders"
         },
         "secondary": {
-          "$value": "#C4B5A6",
+          "$value": "#C4B6A6",
           "$type": "color",
           "$description": "Captions, metadata, and subdued labels"
         }
       },
       "accent": {
         "primary": {
-          "$value": "#B13B29",
+          "$value": "#9B3721",
           "$type": "color",
           "$description": "Primary CTAs, key brand marks, and focal highlights"
         },
         "secondary": {
-          "$value": "#6896D8",
+          "$value": "#C63E30",
           "$type": "color",
           "$description": "Badges, secondary tags, stickers, and hover states"
         }
@@ -130,14 +130,21 @@
     },
     "border": {
       "default": {
-        "$value": "2px solid #B13B29",
+        "$value": "2px solid #9B3721",
         "$type": "other"
       }
     },
     "shadow": {
       "default": {
-        "$value": "4px 4px 0px #14110F",
-        "$type": "shadow"
+        "$value": {
+          "color": "#14110F",
+          "offsetX": "4px",
+          "offsetY": "4px",
+          "blur": "0px",
+          "spread": "0px"
+        },
+        "$type": "shadow",
+        "$description": "CSS box-shadow: 4px 4px 0px #14110F"
       }
     }
   }

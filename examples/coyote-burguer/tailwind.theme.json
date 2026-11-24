@@ -1,13 +1,13 @@
 {
   "colors": {
     "brand": {
-      "bg-primary": "#342A2A",
-      "bg-secondary": "#C4B5A6",
+      "bg-primary": "#31292A",
+      "bg-secondary": "#C4B6A6",
       "surface": "#262320",
       "text-primary": "#F6F2EA",
-      "text-secondary": "#C4B5A6",
-      "accent-primary": "#B13B29",
-      "accent-secondary": "#6896D8",
+      "text-secondary": "#C4B6A6",
+      "accent-primary": "#9B3721",
+      "accent-secondary": "#C63E30",
       "warning": "#D97706",
       "success": "#15803D"
     }

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 from pathlib import Path
@@ -11,6 +12,42 @@ from jinja2 import Environment, FileSystemLoader
 from .models import VisualIdentityManifest
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
+
+
+def _parse_css_shadow_to_w3c(shadow_str: str, fallback_color: str) -> dict[str, str]:
+    """Convert a CSS box-shadow string into a W3C DTCG §9.6 structured shadow value object."""
+    raw = shadow_str.strip()
+    if not raw or raw.lower().startswith("none"):
+        return {
+            "color": "#00000000",
+            "offsetX": "0px",
+            "offsetY": "0px",
+            "blur": "0px",
+            "spread": "0px",
+        }
+
+    # Extract color token (hex or rgba/rgb)
+    color_match = re.search(r"(#[0-9a-fA-F]{3,8}|rgba?\([^)]+\))", raw)
+    color_val = color_match.group(1) if color_match else fallback_color
+    without_color = raw.replace(color_val, "").strip() if color_match else raw
+
+    lengths = re.findall(r"-?\d+(?:\.\d+)?(?:px|rem|em)?", without_color)
+    norm_lengths = [
+        (val if val.endswith(("px", "rem", "em")) else f"{val}px")
+        for val in lengths
+    ]
+    offset_x = norm_lengths[0] if len(norm_lengths) >= 1 else "0px"
+    offset_y = norm_lengths[1] if len(norm_lengths) >= 2 else "4px"
+    blur = norm_lengths[2] if len(norm_lengths) >= 3 else "0px"
+    spread = norm_lengths[3] if len(norm_lengths) >= 4 else "0px"
+
+    return {
+        "color": color_val,
+        "offsetX": offset_x,
+        "offsetY": offset_y,
+        "blur": blur,
+        "spread": spread,
+    }
 
 
 def _build_w3c_design_tokens(manifest: VisualIdentityManifest) -> dict:
@@ -73,7 +110,11 @@ def _build_w3c_design_tokens(manifest: VisualIdentityManifest) -> dict:
                 "default": {"$value": ui.border_style, "$type": "other"},
             },
             "shadow": {
-                "default": {"$value": ui.shadow_style, "$type": "shadow"},
+                "default": {
+                    "$value": _parse_css_shadow_to_w3c(ui.shadow_style, cs.text_primary.hex),
+                    "$type": "shadow",
+                    "$description": f"CSS box-shadow: {ui.shadow_style}",
+                },
             },
         },
     }
@@ -275,19 +316,22 @@ async def run_pin2brand_pipeline(
     if not downloaded:
         raise RuntimeError(f"Failed to download any valid images from {board.canonical_url}")
 
-    math_report = analyze_board_visuals(
+    math_report = await asyncio.to_thread(
+        analyze_board_visuals,
         board_title=board.board_title,
         pins=downloaded,
         contact_sheet_path=contact_sheet_path,
     )
-    manifest, synthesis_mode = synthesize_identity(
+    manifest, synthesis_mode = await asyncio.to_thread(
+        synthesize_identity,
         board=board,
         report=math_report,
         model_name=model_name,
         force_offline=force_offline,
         provider=provider,
     )
-    artifacts = export_brand_kit(
+    artifacts = await asyncio.to_thread(
+        export_brand_kit,
         manifest=manifest,
         output_dir=board_dir,
         contact_sheet_path=contact_sheet_path,

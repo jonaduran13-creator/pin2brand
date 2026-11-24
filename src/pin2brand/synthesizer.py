@@ -30,7 +30,7 @@ from .models import (
     TypographySystem,
     VisualIdentityManifest,
 )
-from .vision_math import delta_e_cie76, hex_to_rgb, wcag_contrast_ratio
+from .vision_math import delta_e_ciede2000, hex_to_rgb, wcag_contrast_ratio
 
 SYSTEM_PROMPT = """You are a Staff Design Systems Architect and Creative Director.
 You are given:
@@ -150,7 +150,7 @@ def _derive_distinct_text_hierarchy(
         for cand in sec_pool:
             if (
                 wcag_contrast_ratio(hex_to_rgb(cand), hex_to_rgb(bg_hex)) >= 4.5
-                and delta_e_cie76(hex_to_rgb(text_pri), hex_to_rgb(cand)) >= 12.0
+                and delta_e_ciede2000(hex_to_rgb(text_pri), hex_to_rgb(cand)) >= 10.0
             ):
                 return text_pri, cand
         return text_pri, _ensure_contrast_pair("#B8ADA0", bg_hex, prefer_dark=False)
@@ -164,10 +164,22 @@ def _derive_distinct_text_hierarchy(
         for cand in sec_pool:
             if (
                 wcag_contrast_ratio(hex_to_rgb(cand), hex_to_rgb(bg_hex)) >= 4.5
-                and delta_e_cie76(hex_to_rgb(text_pri), hex_to_rgb(cand)) >= 12.0
+                and delta_e_ciede2000(hex_to_rgb(text_pri), hex_to_rgb(cand)) >= 10.0
             ):
                 return text_pri, cand
         return text_pri, _ensure_contrast_pair("#57534E", bg_hex, prefer_dark=True)
+
+
+def _sanitize_css_declaration_value(raw_value: str, fallback: str) -> str:
+    """Strip non-CSS explanatory parentheticals like 'none (crisp hairline...)' or '4px 4px 0 #000 (hard shadow)'."""
+    cleaned = raw_value.strip().rstrip(";").strip()
+    # Remove trailing parenthetical if not preceded by rgb/rgba/hsl/hsla/var/calc/oklch/drop-shadow
+    cleaned = re.sub(
+        r"(?<![a-zA-Z-])\s*\([^()]*\)\s*$",
+        "",
+        cleaned,
+    ).strip()
+    return cleaned or fallback
 
 
 def _enforce_wcag_on_color_system(cs: ColorSystem) -> ColorSystem:
@@ -385,7 +397,7 @@ def _synthesize_heuristic(
 
     if is_low_sat_minimal:
         radii = BorderRadiusTokens(sm="0px", md="2px", lg="4px", pill="9999px")
-        shadow_style = "none (crisp hairline framing & negative space)"
+        shadow_style = "none"
     elif report.surface_character == "graphic_flat" or is_high_chroma_bold:
         offset_px = 5 if report.average_saturation >= 0.42 else 4
         radii = BorderRadiusTokens(sm="2px", md="6px", lg="10px", pill="9999px")
@@ -810,6 +822,12 @@ def _reconcile_manifest_pins(
     manifest.reference_pins = reconciled_pins
     manifest.board_url = board.canonical_url
     manifest.color_system = _enforce_wcag_on_color_system(manifest.color_system)
+    manifest.frontend_ui_rules.shadow_style = _sanitize_css_declaration_value(
+        manifest.frontend_ui_rules.shadow_style, "none"
+    )
+    manifest.frontend_ui_rules.border_style = _sanitize_css_declaration_value(
+        manifest.frontend_ui_rules.border_style, f"1px solid {manifest.color_system.text_primary.hex}"
+    )
     return manifest
 
 

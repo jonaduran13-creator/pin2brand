@@ -1,4 +1,4 @@
-"""Automated test suite for Pin2Brand (Pure NumPy CIELAB K-Means++, parametric heuristics, portable paths, and distinct agent templates)."""
+"""Automated test suite for Pin2Brand (NumPy K-Means++, CIEDE2000, W3C DTCG §9.6, MCP security, and parametric heuristics)."""
 
 from __future__ import annotations
 
@@ -7,15 +7,19 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 from PIL import Image, ImageDraw
 
 from pin2brand.exporter import run_pin2brand_pipeline
+from pin2brand.mcp_server import validate_mcp_request
 from pin2brand.scraper import parse_pinterest_board_url
+from pin2brand.synthesizer import _sanitize_css_declaration_value
 from pin2brand.vision_math import (
     _kmeans_plusplus_numpy,
     _lab_to_rgb,
     _rgb_to_lab,
     delta_e_cie76,
+    delta_e_ciede2000,
     hex_to_rgb,
     rgb_to_hex,
     wcag_contrast_ratio,
@@ -38,13 +42,20 @@ def test_parse_pinterest_board_url_variants() -> None:
     assert slug2 == "my-board"
 
 
-def test_pure_numpy_kmeans_and_cielab_wcag() -> None:
+def test_pure_numpy_kmeans_ciede2000_and_wcag() -> None:
     sample_rgb = np.array([[244, 239, 230], [177, 59, 41], [30, 27, 24]], dtype=np.uint8)
     lab = _rgb_to_lab(sample_rgb)
     reconstructed = _lab_to_rgb(lab)
     assert np.allclose(sample_rgb, reconstructed, atol=2)
 
-    # Verify pure NumPy K-Means++ separates 2 clear clusters
+    # Verify CIEDE2000 properties: identity = 0, symmetry, and perceptual differentiation
+    assert delta_e_ciede2000((177, 59, 41), (177, 59, 41)) == pytest.approx(0.0, abs=1e-6)
+    d12 = delta_e_ciede2000((177, 59, 41), (104, 150, 216))
+    d21 = delta_e_ciede2000((104, 150, 216), (177, 59, 41))
+    assert d12 == pytest.approx(d21, abs=1e-6)
+    assert d12 > 35.0
+
+    # Verify pure NumPy BLAS K-Means++ separates 2 clear clusters
     cluster_a = np.tile(np.array([10.0, 0.0, 0.0]), (50, 1))
     cluster_b = np.tile(np.array([90.0, 20.0, 30.0]), (50, 1))
     data = np.vstack([cluster_a, cluster_b])
@@ -57,12 +68,11 @@ def test_pure_numpy_kmeans_and_cielab_wcag() -> None:
     assert rgb_to_hex((177, 59, 41)) == "#B13B29"
 
 
-def test_parametric_minimal_burger_overrides_title_keyword(tmp_path: Path) -> None:
-    """Ensure a low-saturation smooth board named 'Japanese Burger' gets Minimalist Editorial rules, not 70s Diner."""
+def test_parametric_minimal_burger_and_valid_css_shadow(tmp_path: Path) -> None:
+    """Ensure a low-saturation smooth board named 'Japanese Burger' gets Minimalist Editorial rules and valid CSS shadow."""
     src_folder = tmp_path / "minimalist-japanese-burger"
     src_folder.mkdir()
 
-    # Smooth, low-saturation monochrome/warm-gray images
     for idx, gray_val in enumerate([238, 224, 210, 42], start=1):
         img = Image.new("RGB", (300, 300), (gray_val, gray_val, gray_val - 4))
         img.save(src_folder / f"minimal_{idx:02d}.jpg", format="JPEG")
@@ -78,11 +88,16 @@ def test_parametric_minimal_burger_overrides_title_keyword(tmp_path: Path) -> No
     manifest = result["manifest"]
     assert "Minimalist" in manifest.frontend_ui_rules.aesthetic_archetype
     assert manifest.frontend_ui_rules.border_style.startswith("1px solid")
+    assert manifest.frontend_ui_rules.shadow_style == "none"
+    assert "(" not in manifest.frontend_ui_rules.shadow_style
     assert manifest.typography.display_heading.family_recommended == "Instrument Serif"
 
+    assert _sanitize_css_declaration_value("4px 4px 0px #1E1B18 (Hard offset shadow)", "none") == "4px 4px 0px #1E1B18"
+    assert _sanitize_css_declaration_value("0 6px 18px rgba(10, 20, 30, 0.2)", "none") == "0 6px 18px rgba(10, 20, 30, 0.2)"
 
-def test_end_to_end_local_folder_portable_paths_and_distinct_templates(tmp_path: Path) -> None:
-    """Verify full pipeline produces portable relative paths and genuinely distinct agent files."""
+
+def test_end_to_end_local_folder_w3c_dtcg_and_templates(tmp_path: Path) -> None:
+    """Verify full pipeline produces portable paths, W3C DTCG §9.6 structured shadow, and distinct agent files."""
     src_folder = tmp_path / "desert-coyote-mood"
     src_folder.mkdir()
 
@@ -110,14 +125,19 @@ def test_end_to_end_local_folder_portable_paths_and_distinct_templates(tmp_path:
     )
 
     artifacts = result["artifacts"]
-    # Verify portable relative paths (no absolute machine paths like C:\Users\...)
     manifest_raw = artifacts["visual_identity_json"].read_text(encoding="utf-8")
     prompts_raw = artifacts["generative_prompts_json"].read_text(encoding="utf-8")
     assert "C:\\\\" not in manifest_raw and "Users" not in manifest_raw
     assert "C:\\\\" not in prompts_raw and "Users" not in prompts_raw
     assert '"local_path": "references/pin_01.jpg"' in manifest_raw
 
-    # Verify each agent file has a distinct purpose-built template (no Ctrl+C/Ctrl+V duplicates)
+    # Verify W3C DTCG §9.6 structured shadow object
+    w3c_data = json.loads(artifacts["w3c_tokens_json"].read_text(encoding="utf-8"))
+    shadow_val = w3c_data["brand"]["shadow"]["default"]["$value"]
+    assert isinstance(shadow_val, dict)
+    assert {"color", "offsetX", "offsetY", "blur", "spread"} == set(shadow_val.keys())
+
+    # Verify each agent file has a distinct purpose-built template
     design_md = artifacts["design_system_md"].read_text(encoding="utf-8")
     agents_md = artifacts["agents_md"].read_text(encoding="utf-8")
     cursor_mdc = artifacts["cursor_rules_mdc"].read_text(encoding="utf-8")
@@ -129,9 +149,9 @@ def test_end_to_end_local_folder_portable_paths_and_distinct_templates(tmp_path:
     assert "var(--brand-accent-primary)" in cursor_mdc
     assert "Skill Workflow:" in skill_md
 
-    # Verify WCAG AA (>= 4.5:1) on all 9 color tokens AND text_primary vs text_secondary Delta-E >= 12
+    # Verify WCAG AA (>= 4.5:1) on all 9 color tokens AND text_primary vs text_secondary Delta-E
     cs = result["manifest"].color_system
-    all_tokens = [
+    for tok in [
         cs.background_primary,
         cs.background_secondary,
         cs.surface_card,
@@ -141,11 +161,28 @@ def test_end_to_end_local_folder_portable_paths_and_distinct_templates(tmp_path:
         cs.accent_secondary,
         cs.semantic_warning,
         cs.semantic_success,
-    ]
-    for tok in all_tokens:
+    ]:
         assert wcag_contrast_ratio(hex_to_rgb(tok.hex), hex_to_rgb(tok.contrast_text_hex)) >= 4.5
 
-    assert delta_e_cie76(hex_to_rgb(cs.text_primary.hex), hex_to_rgb(cs.text_secondary.hex)) >= 12.0
+    assert delta_e_ciede2000(hex_to_rgb(cs.text_primary.hex), hex_to_rgb(cs.text_secondary.hex)) >= 10.0
 
-    html_raw = artifacts["brand_preview_html"].read_text(encoding="utf-8")
-    assert "this.src='contact_sheet.jpg'" in html_raw
+
+def test_mcp_security_boundaries() -> None:
+    """Ensure MCP server blocks arbitrary local directory scanning and path traversal."""
+    with pytest.raises(ValueError, match="Local directory scanning via MCP is disabled"):
+        validate_mcp_request("C:/Users/Public", "output")
+
+    with pytest.raises(ValueError, match="MCP only permits Pinterest board URLs"):
+        validate_mcp_request("https://evil.example.com/user/board/", "output")
+
+    with pytest.raises(ValueError, match="Path traversal blocked"):
+        validate_mcp_request(
+            "https://mx.pinterest.com/jonathanduransandoval/coyote-burguer/",
+            "../../outside_workspace",
+        )
+
+    safe_path = validate_mcp_request(
+        "https://mx.pinterest.com/jonathanduransandoval/coyote-burguer/",
+        "output",
+    )
+    assert safe_path.name == "output"

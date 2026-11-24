@@ -5,7 +5,7 @@
 - **Aesthetic Archetype:** Artisanal Desert Folk & Handcrafted Street-Food Identity
 - **Source Pinterest Board:** https://mx.pinterest.com/jonathanduransandoval/coyote-burguer/
 - **Mood Keywords:** wolf, starlight, graphicdesign, coyote, terracotta-earth, desert-craft, cobalt-slate-contrast, tactile-mineral-grain
-- **Summary:** Visual identity compiled from 5 references in 'COYOTE BURGUER'. Defined by artisanal desert folk & handcrafted street-food identity, tactile_organic surfaces (grain 28.49), and a warm CIELAB palette (53.32% earth tones).
+- **Summary:** Visual identity compiled from 5 references in 'COYOTE BURGUER'. Defined by artisanal desert folk & handcrafted street-food identity, tactile_organic surfaces (grain 28.49), and a warm CIELAB palette (55.52% earth tones).
 
 ---
 
@@ -23,15 +23,15 @@
 
 | Semantic Role | HEX | CSS Variable | Suggested Tailwind Utility | Recommended Contrast Ink | Usage / Role |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Background Primary** | `#342A2A` | `--brand-bg-primary` | `bg-[#342A2A]` | `#F6F2EA` | Main page background and negative space |
-| **Background Secondary** | `#C4B5A6` | `--brand-bg-secondary` | `bg-[#C4B5A6]` | `#141210` | High-contrast dark/inverted bands, footers, and feature callouts |
+| **Background Primary** | `#31292A` | `--brand-bg-primary` | `bg-[#31292A]` | `#F6F2EA` | Main page background and negative space |
+| **Background Secondary** | `#C4B6A6` | `--brand-bg-secondary` | `bg-[#C4B6A6]` | `#141210` | High-contrast dark/inverted bands, footers, and feature callouts |
 | **Surface Card** | `#262320` | `--brand-surface-card` | `bg-[#262320]` | `#F6F2EA` | Cards, menu tiles, and interactive containers |
-| **Text Primary** | `#F6F2EA` | `--brand-text-primary` | `text-[#F6F2EA]` | `#342A2A` | Headings, body copy, and crisp borders |
-| **Text Secondary** | `#C4B5A6` | `--brand-text-secondary` | `text-[#C4B5A6]` | `#342A2A` | Captions, metadata, and subdued labels |
-| **Accent Primary** | `#B13B29` | `--brand-accent-primary` | `bg-[#B13B29]` | `#FAF8F5` | Primary CTAs, key brand marks, and focal highlights |
-| **Accent Secondary** | `#6896D8` | `--brand-accent-secondary` | `bg-[#6896D8]` | `#141210` | Badges, secondary tags, stickers, and hover states |
+| **Text Primary** | `#F6F2EA` | `--brand-text-primary` | `text-[#F6F2EA]` | `#31292A` | Headings, body copy, and crisp borders |
+| **Text Secondary** | `#C4B6A6` | `--brand-text-secondary` | `text-[#C4B6A6]` | `#31292A` | Captions, metadata, and subdued labels |
+| **Accent Primary** | `#9B3721` | `--brand-accent-primary` | `bg-[#9B3721]` | `#FAF8F5` | Primary CTAs, key brand marks, and focal highlights |
+| **Accent Secondary** | `#C63E30` | `--brand-accent-secondary` | `bg-[#C63E30]` | `#FAF8F5` | Badges, secondary tags, stickers, and hover states |
 
-**Harmony Notes:** Mathematically derived via CIELAB K-Means across 5 pins. Overall temperature is warm with dark_moody polarity, earth-tone share 53.32%, and texture grain score 28.49.
+**Harmony Notes:** Mathematically derived via CIELAB K-Means across 5 pins. Overall temperature is warm with dark_moody polarity, earth-tone share 55.52%, and texture grain score 28.49.
 
 **Forbidden Colors:**
 - Generic SaaS indigo/violet (#6366F1, #8B5CF6)
@@ -53,23 +53,23 @@
 
 ## 4. Surface, Geometry & Component Rules
 
-- **Border Style:** `2px solid #B13B29`
+- **Border Style:** `2px solid #9B3721`
 - **Shadow Style:** `4px 4px 0px #14110F`
 - **Radii:** `sm=2px`, `md=6px`, `lg=10px`, `pill=9999px`
 - **Layout Grid:** Asymmetric editorial bento grid with bold bordered containers and tactile surface contrast.
 
 **Textures & Effects:**
 - Raw mineral sandstone & unglazed clay texture (grain score 28.49)
-- Hand-painted terracotta (#B13B29) and cobalt (#6896D8) block-print motifs
+- Hand-painted terracotta (#9B3721) and cobalt (#C63E30) block-print motifs
 - Linocut / screenprint edge irregularity and stamped badges
 
 
 ### Component Specs
-- **Buttons:** Solid #B13B29 fill with #FAF8F5 bold uppercase label, 2px solid #B13B29, 4px 4px 0px #14110F; shift -2px/-2px on hover.
-- **Cards:** Use #262320 surface with 2px solid #B13B29, radius 6px, and 4px 4px 0px #14110F.
-- **Navigation:** Sticky top bar on #342A2A with bottom 2px solid #B13B29, high-contrast brand mark on left and single bold CTA on right.
+- **Buttons:** Solid #9B3721 fill with #FAF8F5 bold uppercase label, 2px solid #9B3721, 4px 4px 0px #14110F; shift -2px/-2px on hover.
+- **Cards:** Use #262320 surface with 2px solid #9B3721, radius 6px, and 4px 4px 0px #14110F.
+- **Navigation:** Sticky top bar on #31292A with bottom 2px solid #9B3721, high-contrast brand mark on left and single bold CTA on right.
 - **Hero Section:** Split or full-bleed showcase pairing display font (Fraunces) with high-res reference imagery and stamp badge.
-- **Badges:** Pill (9999px) or sharp stamp tags in #6896D8 with #141210 monospace text (Space Mono).
+- **Badges:** Pill (9999px) or sharp stamp tags in #C63E30 with #FAF8F5 monospace text (Space Mono).
 
 ---
 
@@ -86,5 +86,5 @@
 
 - **Contact Sheet:** `contact_sheet.jpg`
 - **Generative Style Prefix:** `Artisanal Southwest desert folk art direction, raw terracotta clay and cobalt pigment, hand-printed linocut & ceramic texture`
-- **Generative Style Suffix:** `anchored in #342A2A earth, #B13B29 burnt terracotta, and #6896D8 cobalt slate, tactile sandstone grain, natural warm studio lighting`
+- **Generative Style Suffix:** `anchored in #31292A earth, #9B3721 burnt terracotta, and #C63E30 cobalt slate, tactile sandstone grain, natural warm studio lighting`
 - **Negative Prompt:** `modern corporate SaaS UI, glossy plastic 3D render, cyberpunk neon, sterile white background, generic stock clipart`

@@ -3,20 +3,20 @@
 
 :root {
   /* Color Tokens */
-  --brand-bg-primary: #342A2A;
+  --brand-bg-primary: #31292A;
   --brand-bg-primary-contrast: #F6F2EA;
-  --brand-bg-secondary: #C4B5A6;
+  --brand-bg-secondary: #C4B6A6;
   --brand-bg-secondary-contrast: #141210;
   --brand-surface-card: #262320;
   --brand-surface-card-contrast: #F6F2EA;
 
   --brand-text-primary: #F6F2EA;
-  --brand-text-secondary: #C4B5A6;
+  --brand-text-secondary: #C4B6A6;
 
-  --brand-accent-primary: #B13B29;
+  --brand-accent-primary: #9B3721;
   --brand-accent-primary-contrast: #FAF8F5;
-  --brand-accent-secondary: #6896D8;
-  --brand-accent-secondary-contrast: #141210;
+  --brand-accent-secondary: #C63E30;
+  --brand-accent-secondary-contrast: #FAF8F5;
 
   --brand-semantic-warning: #D97706;
   --brand-semantic-success: #15803D;
@@ -32,6 +32,6 @@
   --brand-radius-md: 6px;
   --brand-radius-lg: 10px;
   --brand-radius-pill: 9999px;
-  --brand-border: 2px solid #B13B29;
+  --brand-border: 2px solid #9B3721;
   --brand-shadow: 4px 4px 0px #14110F;
 }

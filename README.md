@@ -7,6 +7,9 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 [![MCP Compatible](https://img.shields.io/badge/MCP-FastMCP%20%2F%20MCPServer-00c853.svg)](src/pin2brand/mcp_server.py)
 [![W3C Design Tokens](https://img.shields.io/badge/Design%20Tokens-W3C%20DTCG-ff6f00.svg)](src/pin2brand/exporter.py)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-B13B29.svg)](https://jonaduran13-creator.github.io/pin2brand/)
+
+👉 **[Open Interactive Live Studio Demo (Coyote Burguer)](https://jonaduran13-creator.github.io/pin2brand/)**
 
 ![Pin2Brand Coyote Burguer Contact Sheet](examples/coyote-burguer/contact_sheet.jpg)
 
